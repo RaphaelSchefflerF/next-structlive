@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
 import React, {
   createContext,
   useContext,
   useState,
   type ReactNode,
-} from 'react';
+} from "react";
+
+import { SessionProvider } from "next-auth/react";
 
 // Interface para estruturas de dados
 interface DataStructure {
@@ -14,7 +16,7 @@ interface DataStructure {
   description: string;
   icon: string;
   created: boolean;
-  complexity: 'Básico' | 'Intermediário' | 'Avançado';
+  complexity: "Básico" | "Intermediário" | "Avançado";
   lessons: number;
 }
 
@@ -39,13 +41,13 @@ interface AppContextType {
 // Lista de estruturas de dados
 const dataStructures: DataStructure[] = [
   {
-    id: 'lista',
-    title: 'Listas',
+    id: "lista",
+    title: "Listas",
     created: true,
     description:
-      'Estrutura de dados que organiza elementos de forma sequencial com operações de inserção e remoção flexíveis.',
-    icon: '📝',
-    complexity: 'Básico',
+      "Estrutura de dados que organiza elementos de forma sequencial com operações de inserção e remoção flexíveis.",
+    icon: "📝",
+    complexity: "Básico",
     lessons: 5,
   },
 ];
@@ -56,7 +58,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 // Componente provedor que envolverá nossa aplicação
 export function AppProvider({ children }: { children: ReactNode }) {
   const [currentStructure, setCurrentStructure] = useState<string | null>(null);
-  const [progress, setProgress] = useState<AppContextType['progress']>({});
+  const [progress, setProgress] = useState<AppContextType["progress"]>({});
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(true);
 
   // Função para marcar uma estrutura como concluída
@@ -104,17 +106,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dataStructures,
       getStructureById,
     }),
-    [currentStructure, progress, sidebarExpanded],
+    [currentStructure, progress, sidebarExpanded]
   );
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      <SessionProvider>{children}</SessionProvider>
+    </AppContext.Provider>
+  );
 }
 
 // Hook personalizado para acessar o contexto
 export function useAppContext() {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useAppContext deve ser usado dentro de um AppProvider');
+    throw new Error("useAppContext deve ser usado dentro de um AppProvider");
   }
   return context;
 }
