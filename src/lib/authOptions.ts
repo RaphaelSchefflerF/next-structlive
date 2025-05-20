@@ -1,7 +1,21 @@
 // lib/authOptions.ts
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: SupabaseAdapter({
@@ -27,7 +41,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session?.user && token?.sub) {
-        session?.user?.id = token?.sub;
+        session.user.id = token.sub;
       }
       return session;
     },
