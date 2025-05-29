@@ -1,21 +1,31 @@
-// lib/authOptions.ts
-import { NextAuthOptions, DefaultSession } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
+import { createClient } from "@supabase/supabase-js";
+
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-    } & DefaultSession["user"];
+      name: string;
+      email: string;
+      image?: string;
+    };
   }
 }
 
 interface User {
   id: string;
-  name: string;
-  email: string;
-  image: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
 }
+
+// 🔐 Supabase client com permissões elevadas
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export const authOptions: NextAuthOptions = {
   adapter: SupabaseAdapter({
@@ -33,17 +43,85 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
+    async session({ session, token }) {
+      if (!session.user) return session;
+
+      // Se o token.sub estiver definido, usamos diretamente
+      if (token?.sub) {
+        session.user.id = token.sub;
+      } else {
+        // Fallback: busca o ID no Supabase com base no e-mail
+        const { data: user } = await supabase
+          .from("usuarios")
+          .select("id")
+          .eq("email", session.user.email)
+          .single();
+
+        if (user?.id) {
+          session.user.id = user.id;
+        } else {
+          console.warn("⚠️ ID de usuário não encontrado no Supabase.");
+        }
+      }
+
+      return session;
+    },
+
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
+        // Assegura que token.sub sempre receba algo
+        token.sub = user.id ?? user.email ?? "";
       }
       return token;
     },
-    async session({ session, token }) {
-      if (session?.user && token?.sub) {
-        session.user.id = token.sub;
+  },
+  events: {
+    async signIn({ user }) {
+      try {
+        const { id, name, email, image } = user as User;
+
+        console.log("➡️ Evento signIn disparado:", { id, name, email });
+
+        const { data: existingUser, error: fetchError } = await supabase
+          .from("usuarios")
+          .select("id")
+          .eq("id", id)
+          .single();
+
+        if (fetchError && fetchError.code !== "PGRST116") {
+          console.error(
+            "❌ Erro ao buscar usuário na tabela `usuarios`:",
+            fetchError.message
+          );
+          return;
+        }
+
+        if (!existingUser) {
+          const { error: insertError } = await supabase
+            .from("usuarios")
+            .insert([
+              {
+                id,
+                nome: name,
+                email,
+                foto_url: image,
+              },
+            ]);
+
+          if (insertError) {
+            console.error(
+              "❌ Erro ao inserir usuário na tabela `usuarios`:",
+              insertError.message
+            );
+          } else {
+            console.log(
+              "✅ Usuário inserido com sucesso na tabela `usuarios`."
+            );
+          }
+        }
+      } catch (err) {
+        console.error("❌ Erro inesperado no evento signIn:", err);
       }
-      return session;
     },
   },
 };
