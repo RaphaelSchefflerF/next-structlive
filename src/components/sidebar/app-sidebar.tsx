@@ -149,27 +149,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
-                            Implementação
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
-                            Sandbox
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
-                            Aplicações
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                       {progress[structure.id]?.lastVisited && (
                         <div className="px-8 py-1 text-xs text-muted-foreground">
                           {getLastVisitedText(structure.id)}

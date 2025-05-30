@@ -17,20 +17,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   BookOpen,
   BookOpenCheck,
-  Code,
   Home,
   Lightbulb,
   List,
   PlayCircle,
-  Zap,
 } from 'lucide-react';
 import type { Metadata } from 'next';
 
-import ListImplementation from '@/app/estruturas/lista/components/list-implementation';
 import ListOperations from '@/app/estruturas/lista/components/list-operations';
-import ListSandbox from '@/app/estruturas/lista/components/list-sandbox';
 // Componentes de seções
 import ListVisualization from '@/app/estruturas/lista/components/list-visualization';
+import RemoverFim from '@/app/estruturas/lista/components/removerFimTutorial';
 
 export const metadata: Metadata = {
   title: 'Listas | Structlive',
@@ -91,7 +88,7 @@ export default function ListPage() {
           <Separator className="my-6" />
 
           <Tabs defaultValue="tutorial" className="w-full">
-            <TabsList className="flex flex-col  min-[440]:grid min-[440]:grid-cols-3 lg:grid-cols-6  w-full mb-8">
+            <TabsList className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 w-full mb-8">
               <TabsTrigger
                 value="tutorial"
                 className="flex items-center gap-2 w-full cursor-pointer"
@@ -111,22 +108,10 @@ export default function ListPage() {
                 <BookOpenCheck className="h-4 w-4" /> Atividades
               </TabsTrigger>
               <TabsTrigger
-                value="implementation"
-                className="flex items-center gap-2 w-full cursor-pointer"
-              >
-                <Code className="h-4 w-4" /> Implementação
-              </TabsTrigger>
-              <TabsTrigger
-                value="sandbox"
-                className="flex items-center gap-2 w-full cursor-pointer"
-              >
-                <Zap className="h-4 w-4" /> Sandbox
-              </TabsTrigger>
-              <TabsTrigger
                 value="applications"
                 className="flex items-center gap-2 w-full cursor-pointer"
               >
-                <Lightbulb className="h-4 w-4" /> Aplicações
+                <Lightbulb className="h-4 w-4" /> RemoverFim
               </TabsTrigger>
             </TabsList>
 
@@ -239,88 +224,9 @@ export default function ListPage() {
               </div>
             </TabsContent>
 
-            {/* Implementação */}
-            <TabsContent value="implementation">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Implementação de Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Veja diferentes maneiras de implementar listas em código.
-                </p>
-                <ListImplementation />
-              </div>
-            </TabsContent>
-
-            {/* Sandbox */}
-            <TabsContent value="sandbox">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Ambiente de Desenvolvimento
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Experimente escrever seu próprio código para manipular listas.
-                </p>
-                <ListSandbox />
-              </div>
-            </TabsContent>
-
-            {/* Aplicações */}
+            {/* RemoverFim */}
             <TabsContent value="applications">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Aplicações de Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Conheça exemplos práticos do uso de listas em problemas reais.
-                </p>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Implementação de outras estruturas de dados
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Listas são frequentemente usadas como base para
-                      implementar outras estruturas de dados como pilhas e
-                      filas, aproveitando sua flexibilidade de tamanho e
-                      eficiência em inserções/remoções.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Gerenciamento de memória
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Sistemas operacionais usam listas para gerenciar blocos de
-                      memória livres e alocados, permitindo alocação e liberação
-                      dinâmica de recursos.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Histórico de navegação
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Navegadores web utilizam listas para implementar o
-                      histórico de navegação, permitindo que os usuários voltem
-                      e avancem entre páginas visitadas.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Representação de grafos
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Listas de adjacências são usadas para representar grafos
-                      de forma eficiente, onde cada vértice mantém uma lista de
-                      seus vizinhos conectados.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <RemoverFim />
             </TabsContent>
           </Tabs>
         </div>

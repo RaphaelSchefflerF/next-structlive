@@ -20,7 +20,6 @@ export function RecentStructures() {
     arrays: 'Arrays e Vetores',
     stacks: 'Pilhas',
     queues: 'Filas',
-    'listas-ligadas': 'Listas Ligadas',
     grafos: 'Grafos',
     arvores: 'Árvores',
     heaps: 'Heaps',
