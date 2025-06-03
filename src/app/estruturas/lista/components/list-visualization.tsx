@@ -236,10 +236,10 @@ export default function ListVisualization() {
                       </div>
 
                       {/* Seta para o próximo nó */}
-                      <div className="flex items-center mx-1">
-                        <div className="w-6 h-0.5 bg-gray-800"></div>
-                        <div className="w-6 h-0.5 bg-gray-800 relative">
-                          <div className="absolute right-0 top-0 w-0 h-0 border-l-[6px] border-l-gray-800 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent transform -translate-y-1/2"></div>
+                      <div className="flex items-center mx-1 relative">
+                        <div className="w-13 h-1 right-0 top-[-2px] bg-gray-800 absolute"></div>
+                        <div className="w-6 h-1 relative">
+                          <div className="absolute right-[-8px] top-0 w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent transform -translate-y-1/2"></div>
                         </div>
                       </div>
                     </div>
