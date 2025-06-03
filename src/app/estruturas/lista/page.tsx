@@ -1,4 +1,4 @@
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,14 +6,14 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BookOpen,
   BookOpenCheck,
@@ -21,21 +21,35 @@ import {
   Lightbulb,
   List,
   PlayCircle,
-} from 'lucide-react';
-import type { Metadata } from 'next';
+} from "lucide-react";
+import type { Metadata } from "next";
 
-import ListOperations from '@/app/estruturas/lista/components/list-operations';
+// Adicione os imports do Select do seu design system (ajuste o caminho se necessário)
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import ListOperations from "@/app/estruturas/lista/components/list-operations";
 // Componentes de seções
-import ListVisualization from '@/app/estruturas/lista/components/list-visualization';
-import RemoverFim from '@/app/estruturas/lista/components/removerFimTutorial';
+import ListVisualization from "@/app/estruturas/lista/components/list-visualization";
+import RemoverFim from "@/app/estruturas/lista/components/removerFimTutorial";
 
 export const metadata: Metadata = {
-  title: 'Listas | Structlive',
+  title: "Listas | Structlive",
   description:
-    'Aprenda sobre a estrutura de dados Lista e como ela pode armazenar e manipular coleções de elementos',
+    "Aprenda sobre a estrutura de dados Lista e como ela pode armazenar e manipular coleções de elementos",
 };
 
 export default function ListPage() {
+  // Função para navegação (caso queira adicionar navegação futura)
+  // const router = useRouter();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -84,7 +98,41 @@ export default function ListPage() {
               elementos
             </p>
           </div>
-
+          {/* Select de tipos de lista */}
+          <div className="mt-6 mb-4 flex items-center gap-4">
+            <span className="text-base text-muted-foreground">
+              Selecione qual estrutura você deseja:
+            </span>
+            <Select value="lista">
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Selecione o tipo de lista" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Tipos de Lista</SelectLabel>
+                  <SelectItem value="lista">Lista</SelectItem>
+                  <SelectItem value="estatica" disabled>
+                    Lista Estática
+                  </SelectItem>
+                  <SelectItem value="estatica-sequencial" disabled>
+                    Lista Estática Sequencial
+                  </SelectItem>
+                  <SelectItem value="estatica-encadeada">
+                    Lista Estática Encadeada
+                  </SelectItem>
+                  <SelectItem value="dinamica-simples" disabled>
+                    Lista Dinâmica Simplesmente Encadeada
+                  </SelectItem>
+                  <SelectItem value="dinamica-dupla" disabled>
+                    Lista Dinâmica Duplamente Encadeada
+                  </SelectItem>
+                  <SelectItem value="circular" disabled>
+                    Lista Circular
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           <Separator className="my-6" />
 
           <Tabs defaultValue="tutorial" className="w-full">
