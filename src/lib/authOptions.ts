@@ -76,16 +76,10 @@ export const authOptions: NextAuthOptions = {
 
     async jwt({ token, user, profile }) {
       // Se for login inicial, user e profile estarão presentes
-      if (user) {
-        token.sub = user.id ?? user.email ?? "";
-        // Google retorna a imagem em user.image
-        if (user.image) {
-          token.image = user.image;
-        }
-      }
-      // Se profile existir (primeiro login), também pega a imagem do Google
       if (profile && profile.image) {
         token.image = profile.image;
+      } else if (user && user.image) {
+        token.image = user.image;
       }
       return token;
     },

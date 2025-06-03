@@ -35,17 +35,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Pega dados reais do usuário autenticado
   const { data: session } = useSession();
-  const user = session?.user
-    ? {
-        name: session?.user?.name || "",
-        email: session?.user?.email || "",
-        avatar: session?.user?.image || "",
-      }
-    : {
-        name: "User",
-        email: "",
-        avatar: "",
-      };
+
+  // Busca dados do usuário do localStorage se disponíveis
+  const [localUser, setLocalUser] = useState({
+    name: "",
+    email: "",
+    image: "",
+  });
+
+  useEffect(() => {
+    const name = localStorage.getItem("user_name") || "";
+    const email = localStorage.getItem("user_email") || "";
+    const image = localStorage.getItem("user_image") || "";
+    setLocalUser({ name, email, image });
+  }, [session]);
+
+  const user = {
+    name: localUser.name || session?.user?.name || "User",
+    email: localUser.email || session?.user?.email || "",
+    image: localUser.image || session?.user?.image || "",
+  };
+
+  // Salva os dados do usuário no localStorage sempre que a sessão mudar
+  useEffect(() => {
+    if (session?.user) {
+      localStorage.setItem("user_name", session.user.name || "");
+      localStorage.setItem("user_email", session.user.email || "");
+      localStorage.setItem("user_image", session.user.image || "");
+    }
+  }, [session]);
 
   // Define o item atual como expandido quando a estrutura atual mudar
   useEffect(() => {
