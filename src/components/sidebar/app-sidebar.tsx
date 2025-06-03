@@ -19,13 +19,13 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useAppContext } from "@/contexts/AppContext";
-import { CheckCircle, Minus, Plus, Globe2, ChevronsUpDown, LogOut, Sun, Moon } from "lucide-react";
+import { CheckCircle, Minus, Plus, Globe2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
 import { useEffect, useState } from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useSession, signOut } from "next-auth/react";
+import { NavUser } from "@/components/nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { dataStructures, progress, currentStructure } = useAppContext();
@@ -33,24 +33,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {}
   );
 
-  // Simple mobile detection using window width
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // TODO: Replace this mock user with real user data from context or props
-  const user = {
-    name: "Carlos Nunes",
-    email: "carlos@example.com",
-    avatar: "/assets/avatar.png",
-  };
+  // Pega dados reais do usuário autenticado
+  const { data: session } = useSession();
+  const user = session?.user
+    ? {
+        name: session?.user?.name || "",
+        email: session?.user?.email || "",
+        avatar: session?.user?.image || "",
+      }
+    : {
+        name: "User",
+        email: "",
+        avatar: "",
+      };
 
   // Define o item atual como expandido quando a estrutura atual mudar
   useEffect(() => {
@@ -91,7 +86,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar collapsible="icon" className="" {...props}>
+    <Sidebar
+      collapsible="icon"
+      className="bg-blue-50 border-r border-blue-200 shadow-sm" // cor de fundo e borda lateral
+      {...props}
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -191,63 +190,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">{user.name}</span>
-                      <span className="truncate text-xs">{user.email}</span>
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <Sun />
-                    Light Mode
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Moon />
-                    Dark Mode
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <NavUser
+          user={user}
+          onLogout={() => signOut({ callbackUrl: "/login" })}
+        />
       </SidebarFooter>
     </Sidebar>
   );

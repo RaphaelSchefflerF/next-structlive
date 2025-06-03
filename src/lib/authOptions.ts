@@ -46,6 +46,13 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (!session.user) return session;
 
+      // Garante que a imagem de perfil do usuário seja propagada para session.user.image
+      if (token?.picture) {
+        session.user.image = token.picture as string;
+      } else if (token?.image) {
+        session.user.image = token.image as string;
+      }
+
       // Se o token.sub estiver definido, usamos diretamente
       if (token?.sub) {
         session.user.id = token.sub;
@@ -67,10 +74,18 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, profile }) {
+      // Se for login inicial, user e profile estarão presentes
       if (user) {
-        // Assegura que token.sub sempre receba algo
         token.sub = user.id ?? user.email ?? "";
+        // Google retorna a imagem em user.image
+        if (user.image) {
+          token.image = user.image;
+        }
+      }
+      // Se profile existir (primeiro login), também pega a imagem do Google
+      if (profile && profile.image) {
+        token.image = profile.image;
       }
       return token;
     },
