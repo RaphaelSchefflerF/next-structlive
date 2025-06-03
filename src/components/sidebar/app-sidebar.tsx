@@ -1,14 +1,15 @@
-'use client';
-import { SearchForm } from '@/components/search-form';
+"use client";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -16,20 +17,40 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
-} from '@/components/ui/sidebar';
-import { useAppContext } from '@/contexts/AppContext';
-import { CheckCircle, Minus, Plus } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import type * as React from 'react';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/sidebar";
+import { useAppContext } from "@/contexts/AppContext";
+import { CheckCircle, Minus, Plus, Globe2, ChevronsUpDown, LogOut, Sun, Moon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type * as React from "react";
+import { useEffect, useState } from "react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { dataStructures, progress, currentStructure } = useAppContext();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
-    {},
+    {}
   );
+
+  // Simple mobile detection using window width
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // TODO: Replace this mock user with real user data from context or props
+  const user = {
+    name: "Carlos Nunes",
+    email: "carlos@example.com",
+    avatar: "/assets/avatar.png",
+  };
 
   // Define o item atual como expandido quando a estrutura atual mudar
   useEffect(() => {
@@ -53,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Obtém a data da última visita formatada
   const getLastVisitedText = (structureId: string) => {
     const lastVisited = progress[structureId]?.lastVisited;
-    if (!lastVisited) return '';
+    if (!lastVisited) return "";
 
     // Formate a data relativa (hoje, ontem, ou data específica)
     const today = new Date();
@@ -61,16 +82,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (lastVisited.toDateString() === today.toDateString()) {
-      return 'Visitado hoje';
+      return "Visitado hoje";
     }
     if (lastVisited.toDateString() === yesterday.toDateString()) {
-      return 'Visitado ontem';
+      return "Visitado ontem";
     }
     return `Visitado em ${lastVisited.toLocaleDateString()}`;
   };
 
   return (
-    <Sidebar {...props}>
+    <Sidebar collapsible="icon" className="" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -85,21 +106,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   priority
                 />
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">StructLive</span>
+                  <span className="font-bold text-xl">StructLive</span>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <SearchForm />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <div className="px-4 py-2">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-              Estruturas Básicas
-            </h3>
-          </div>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/estruturas" className="flex items-center gap-2">
+                  <Globe2 className="text-blue-500 text-lg" />
+                  <span className="font-medium">Estruturas de Dados</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Estruturas Básicas</SidebarGroupLabel>
           <SidebarMenu>
             {structuresByComplexity.Básico.map((structure) => (
               <Collapsible
@@ -161,41 +189,66 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-
-        {Object.keys(progress).length > 0 && (
-          <SidebarGroup className="mt-6">
-            <div className="px-4 py-2">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Seu progresso
-              </h3>
-              <div className="mt-2 h-2 w-full bg-muted rounded-full overflow-hidden">
-                <div
-                  className="bg-primary h-full"
-                  style={{
-                    width: `${Math.round(
-                      (Object.values(progress).filter((item) => item.completed)
-                        .length /
-                        dataStructures.length) *
-                        100,
-                    )}%`,
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>
-                  {
-                    Object.values(progress).filter((item) => item.completed)
-                      .length
-                  }{' '}
-                  concluídos
-                </span>
-                <span>{dataStructures.length} total</span>
-              </div>
-            </div>
-          </SidebarGroup>
-        )}
       </SidebarContent>
-      <SidebarRail />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">{user.name}</span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                side={isMobile ? "bottom" : "right"}
+                align="end"
+                sideOffset={4}
+              >
+                <DropdownMenuLabel className="p-0 font-normal">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">{user.name}</span>
+                      <span className="truncate text-xs">{user.email}</span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Sun />
+                    Light Mode
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Moon />
+                    Dark Mode
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }
