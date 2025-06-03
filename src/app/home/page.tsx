@@ -58,7 +58,7 @@ export default function HomePage() {
           </div>
         </header>
         {/* Hero Marketing */}
-        <section className="relative flex flex-col items-center justify-center min-h-[420px] bg-gradient-to-br from-blue-100 via-indigo-100 to-white rounded-b-3xl shadow-md overflow-hidden">
+        <section className="relative flex flex-col items-center justify-center min-h-[420px] bg-gradient-to-br from-blue-100 via-indigo-100 to-white shadow-md overflow-hidden">
           <div className="z-10 flex flex-col items-center gap-6 py-16">
             <span className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-primary/10 text-primary font-semibold text-sm shadow">
               Plataforma Visual de Estruturas de Dados
