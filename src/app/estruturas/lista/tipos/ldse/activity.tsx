@@ -1,18 +1,16 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CheckCircle, XCircle } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface ExerciseProps {
   title: string;
@@ -20,62 +18,62 @@ interface ExerciseProps {
   validation: (input: string) => boolean;
 }
 
-export default function ListOperations() {
+export default function LdseActivity() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [results, setResults] = useState<Record<number, boolean>>({});
   const [submitted, setSubmitted] = useState<Record<number, boolean>>({});
 
   const exercises: ExerciseProps[] = [
     {
-      title: 'Encontrar o elemento central',
+      title: "Encontrar o elemento central",
       description:
-        'Qual é o algoritmo mais eficiente para encontrar o elemento central de uma lista encadeada em uma única passagem?',
+        "Qual é o algoritmo mais eficiente para encontrar o elemento central de uma lista encadeada em uma única passagem?",
       validation: (input) => {
         const normalizedInput = input.toLowerCase();
         return (
-          normalizedInput.includes('dois ponteiros') ||
-          (normalizedInput.includes('fast') &&
-            normalizedInput.includes('slow')) ||
-          (normalizedInput.includes('rápido') &&
-            normalizedInput.includes('lento'))
+          normalizedInput.includes("dois ponteiros") ||
+          (normalizedInput.includes("fast") &&
+            normalizedInput.includes("slow")) ||
+          (normalizedInput.includes("rápido") &&
+            normalizedInput.includes("lento"))
         );
       },
     },
     {
-      title: 'Detectar ciclo',
+      title: "Detectar ciclo",
       description:
-        'Qual algoritmo podemos usar para detectar um ciclo em uma lista encadeada?',
+        "Qual algoritmo podemos usar para detectar um ciclo em uma lista encadeada?",
       validation: (input) => {
         const normalizedInput = input.toLowerCase();
         return (
-          normalizedInput.includes('floyd') ||
-          normalizedInput.includes('tartaruga e lebre') ||
-          normalizedInput.includes('dois ponteiros')
+          normalizedInput.includes("floyd") ||
+          normalizedInput.includes("tartaruga e lebre") ||
+          normalizedInput.includes("dois ponteiros")
         );
       },
     },
     {
-      title: 'Inverter uma lista',
+      title: "Inverter uma lista",
       description:
-        'Escreva os passos para inverter uma lista simplesmente encadeada de forma iterativa.',
+        "Escreva os passos para inverter uma lista simplesmente encadeada de forma iterativa.",
       validation: (input) => {
         const normalizedInput = input.toLowerCase();
         return (
-          normalizedInput.includes('prev') &&
-          normalizedInput.includes('current') &&
-          normalizedInput.includes('next')
+          normalizedInput.includes("prev") &&
+          normalizedInput.includes("current") &&
+          normalizedInput.includes("next")
         );
       },
     },
     {
-      title: 'Operação mais eficiente',
+      title: "Operação mais eficiente",
       description:
-        'Qual tipo de lista é mais eficiente para inserções e remoções frequentes no meio da estrutura?',
+        "Qual tipo de lista é mais eficiente para inserções e remoções frequentes no meio da estrutura?",
       validation: (input) => {
         const normalizedInput = input.toLowerCase();
         return (
-          normalizedInput.includes('duplamente') ||
-          normalizedInput.includes('doubly')
+          normalizedInput.includes("duplamente") ||
+          normalizedInput.includes("doubly")
         );
       },
     },
@@ -89,7 +87,7 @@ export default function ListOperations() {
   };
 
   const handleSubmit = (index: number) => {
-    const answer = answers[index] || '';
+    const answer = answers[index] || "";
     const result = exercises[index].validation(answer);
 
     setResults((prev) => ({
@@ -103,12 +101,11 @@ export default function ListOperations() {
     }));
 
     if (result) {
-      toast.success('Resposta correta!');
+      toast.success("Resposta correta!");
     } else {
-      toast.error('Tente novamente.');
+      toast.error("Tente novamente.");
     }
   };
-
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -126,9 +123,9 @@ export default function ListOperations() {
             className={
               submitted[index]
                 ? results[index]
-                  ? 'border-green-500/50'
-                  : 'border-red-500/50'
-                : ''
+                  ? "border-green-500/50"
+                  : "border-red-500/50"
+                : ""
             }
           >
             <CardHeader className="pb-3">
@@ -150,7 +147,7 @@ export default function ListOperations() {
                   <Input
                     id={`answer-${index}`}
                     placeholder="Digite sua resposta..."
-                    value={answers[index] || ''}
+                    value={answers[index] || ""}
                     onChange={(e) => handleAnswerChange(index, e.target.value)}
                     disabled={submitted[index] && results[index]}
                   />
@@ -164,9 +161,9 @@ export default function ListOperations() {
                 >
                   {submitted[index]
                     ? results[index]
-                      ? 'Concluído'
-                      : 'Tentar novamente'
-                    : 'Verificar'}
+                      ? "Concluído"
+                      : "Tentar novamente"
+                    : "Verificar"}
                 </Button>
               </div>
             </CardContent>
