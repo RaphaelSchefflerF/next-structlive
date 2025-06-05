@@ -151,12 +151,6 @@ export default function ListPage() {
               >
                 <BookOpenCheck className='h-4 w-4' /> Atividades
               </TabsTrigger>
-              <TabsTrigger
-                value='applications'
-                className='flex items-center gap-2 w-full cursor-pointer'
-              >
-                <BookOpenCheck className='h-4 w-4' /> Atividades
-              </TabsTrigger>
             </TabsList>
 
             {/* Conteudo - Explicação teórica */}

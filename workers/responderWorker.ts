@@ -21,7 +21,8 @@ async function gerarFeedbackComGemini(prompt: string): Promise<string> {
     headers: { "Content-Type": "application/json" },
   });
 
-  const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const parts = response.data?.candidates?.[0]?.content?.parts;
+  const text = parts?.map((p: any) => p.text).join(""); // 🔄 Garante concatenação válida
   return text || "Não foi possível gerar a explicação.";
 }
 
