@@ -36,6 +36,9 @@ export const metadata: Metadata = {
 };
 
 export default function ListPage() {
+  // Função para navegação (caso queira adicionar navegação futura)
+  // const router = useRouter();
+
   return (
     <SidebarProvider>
       <AppSidebar />
