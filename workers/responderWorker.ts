@@ -1,11 +1,31 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-require("dotenv").config();
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const amqp = require("amqplib");
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { createClient } = require("@supabase/supabase-js");
+// worker.ts
 
-// Tipagem manual para o `msg`:
+require("dotenv").config(); // Carrega variáveis de ambiente do arquivo .env
+const amqp = require("amqplib");
+const { createClient } = require("@supabase/supabase-js");
+const axios = require("axios");
+
+async function gerarFeedbackComGemini(prompt: string): Promise<string> {
+  const API_KEY = process.env.GEMINI_API_KEY;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+  const payload = {
+    contents: [
+      {
+        parts: [{ text: prompt }],
+      },
+    ],
+  };
+
+  const response = await axios.post(endpoint, payload, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const parts = response.data?.candidates?.[0]?.content?.parts;
+  const text = parts?.map((p: any) => p.text).join(""); // 🔄 Garante concatenação válida
+  return text || "Não foi possível gerar a explicação.";
+}
+
 type ConsumeMessage = {
   content: Buffer;
 };
@@ -22,10 +42,9 @@ async function handleMessage(msg: ConsumeMessage, channel: any) {
     const content = JSON.parse(msg.content.toString());
     const { atividadeId, usuarioId, alternativaMarcada } = content;
 
-    // 🔍 Buscar alternativas da atividade
     const { data: atividade, error: atividadeError } = await supabase
       .from("atividades")
-      .select("alternativas")
+      .select("titulo, descricao, estrutura, alternativas, feedback_modelo")
       .eq("id", atividadeId)
       .single();
 
@@ -40,12 +59,26 @@ async function handleMessage(msg: ConsumeMessage, channel: any) {
 
     const acertou = alternativaEscolhida?.correta === true;
 
-    // ⚠️ Feedback simulado
-    const feedback = `Simulação: você escolheu "${alternativaMarcada}". ${
-      acertou ? "Resposta correta!" : "Resposta incorreta."
-    }`;
+    // 🔤 Prompt personalizado
+    const prompt = `Explique por que a alternativa "${alternativaMarcada}" está ${
+      acertou ? "correta" : "incorreta"
+    }, com base na seguinte questão:
 
-    // 🔁 Upsert para evitar múltiplas respostas
+Título: ${atividade.titulo}
+Descrição: ${atividade.descricao}
+Estrutura: ${atividade.estrutura || "Não informada"}
+
+Alternativas:
+${atividade.alternativas
+  .map((a: any) => `- (${a.correta ? "✔️" : "❌"}) ${a.texto}`)
+  .join("\n")}
+`;
+
+    // 🧠 Geração do feedback via Gemini
+    const feedbackGerado = await gerarFeedbackComGemini(prompt);
+
+    const feedback = feedbackGerado;
+
     const { error: upsertError } = await supabase
       .from("respostas_usuario")
       .upsert(
@@ -60,7 +93,7 @@ async function handleMessage(msg: ConsumeMessage, channel: any) {
           },
         ],
         {
-          onConflict: ["usuario_id", "atividade_id"],
+          onConflict: "usuario_id,atividade_id", // ✅ CORRIGIDO
         }
       );
 
@@ -84,8 +117,8 @@ async function startWorker() {
 
   channel.consume(
     queue,
-    (msg: ConsumeMessage) => {
-      handleMessage(msg, channel);
+    (msg: ConsumeMessage | null) => {
+      if (msg) handleMessage(msg, channel); // ✅ CORRIGIDO
     },
     { noAck: false }
   );
