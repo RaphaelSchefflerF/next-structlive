@@ -2,6 +2,8 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
 import { createClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
+import { iniciarSessao, finalizarSessao } from "@/lib/logSessao";
 
 declare module "next-auth" {
   interface Session {
@@ -85,7 +87,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    async signIn({ user }) {
+    async signIn({ user, account, profile }) {
       try {
         const { id, name, email, image } = user as User;
 
@@ -128,8 +130,49 @@ export const authOptions: NextAuthOptions = {
             );
           }
         }
+
+        type ProfileWithMeta = typeof profile & {
+          ip_address?: string | null;
+          user_agent?: string | null;
+        };
+        type AccountWithMeta = typeof account & {
+          ip_address?: string | null;
+          user_agent?: string | null;
+        };
+
+        const ip =
+          (profile as ProfileWithMeta)?.ip_address ||
+          (account as AccountWithMeta)?.ip_address ||
+          null;
+        const userAgent =
+          (profile as ProfileWithMeta)?.user_agent ||
+          (account as AccountWithMeta)?.user_agent ||
+          null;
+        const logId = await iniciarSessao({
+          userId: id,
+          ipAddress: ip,
+          userAgent,
+        });
+        if (logId) {
+          (await cookies()).set("log_sessao_id", logId, {
+            httpOnly: true,
+            sameSite: "lax",
+            path: "/",
+          });
+        }
       } catch (err) {
         console.error("❌ Erro inesperado no evento signIn:", err);
+      }
+    },
+    async signOut() {
+      try {
+        const logId = (await cookies()).get("log_sessao_id")?.value;
+        if (logId) {
+          await finalizarSessao({ logId });
+          (await cookies()).delete("log_sessao_id");
+        }
+      } catch (err) {
+        console.error("❌ Erro ao finalizar log de sessão:", err);
       }
     },
   },
