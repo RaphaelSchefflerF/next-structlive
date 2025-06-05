@@ -1,4 +1,6 @@
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
+"use client";
+import { useState } from "react";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,39 +8,32 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BookOpen, BookOpenCheck, Home, List, PlayCircle } from "lucide-react";
+
 import {
-  BookOpen,
-  BookOpenCheck,
-  Code,
-  Home,
-  Lightbulb,
-  List,
-  PlayCircle,
-  Zap,
-} from 'lucide-react';
-import type { Metadata } from 'next';
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import ListImplementation from '@/app/estruturas/lista/components/list-implementation';
-import ListOperations from '@/app/estruturas/lista/components/list-operations';
-import ListSandbox from '@/app/estruturas/lista/components/list-sandbox';
-// Componentes de seções
-import ListVisualization from '@/app/estruturas/lista/components/list-visualization';
-
-export const metadata: Metadata = {
-  title: 'Listas | Structlive',
-  description:
-    'Aprenda sobre a estrutura de dados Lista e como ela pode armazenar e manipular coleções de elementos',
-};
+import ListActivity from "@/app/estruturas/lista/components/list-activity";
+import ListVisualization from "@/app/estruturas/lista/components/list-visualization";
+import ListTheory from "@/app/estruturas/lista/components/list-theory";
 
 export default function ListPage() {
+  const [tipoLista, setTipoLista] = useState("le");
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -87,126 +82,93 @@ export default function ListPage() {
               elementos
             </p>
           </div>
-
+          {/* Select de tipos de lista */}
+          <div className="mt-6 mb-4 flex items-center gap-4">
+            <span className="text-base text-muted-foreground">
+              Selecione qual estrutura você deseja:
+            </span>
+            <Select value={tipoLista} onValueChange={setTipoLista}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Selecione o tipo de lista" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="le">Lista Estática</SelectItem>
+                  <SelectItem value="les" disabled>
+                    Lista Estática Sequencial
+                  </SelectItem>
+                  <SelectItem value="lee" disabled>
+                    Lista Estática Encadeada
+                  </SelectItem>
+                  <SelectItem value="ldse">
+                    Lista Dinâmica Simplesmente Encadeada
+                  </SelectItem>
+                  <SelectItem value="ldde" disabled>
+                    Lista Dinâmica Duplamente Encadeada
+                  </SelectItem>
+                  <SelectItem value="lc" disabled>
+                    Lista Circular
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           <Separator className="my-6" />
 
-          <Tabs defaultValue="tutorial" className="w-full">
-            <TabsList className="flex flex-col  min-[440]:grid min-[440]:grid-cols-3 lg:grid-cols-6  w-full mb-8">
+          <Tabs defaultValue="conteudo" className="w-full">
+            <TabsList
+              className="
+                flex flex-wrap w-full mb-4
+                justify-start sm:justify-center
+                bg-muted/50 rounded-lg p-1
+              "
+            >
               <TabsTrigger
-                value="tutorial"
-                className="flex items-center gap-2 w-full cursor-pointer"
+                value="conteudo"
+                className="
+                  flex items-center gap-2 px-4 w-full sm:w-auto
+                  rounded-md font-medium transition
+                  data-[state=active]:bg-background data-[state=active]:shadow
+                  cursor-pointer
+                "
               >
-                <BookOpen className="h-4 w-4" /> Tutorial
+                <BookOpen className="h-4 w-4" /> Conteúdo
               </TabsTrigger>
               <TabsTrigger
                 value="visualization"
-                className="flex items-center gap-2 w-full cursor-pointer"
+                className="
+                  flex items-center gap-2 px-4 w-full sm:w-auto
+                  rounded-md font-medium transition
+                  data-[state=active]:bg-background data-[state=active]:shadow
+                  cursor-pointer
+                "
               >
                 <PlayCircle className="h-4 w-4" /> Visualização
               </TabsTrigger>
               <TabsTrigger
                 value="practice"
-                className="flex items-center gap-2 w-full cursor-pointer"
+                className="
+                  flex items-center gap-2 px-4 w-full sm:w-auto
+                  rounded-md font-medium transition
+                  data-[state=active]:bg-background data-[state=active]:shadow
+                  cursor-pointer
+                "
               >
                 <BookOpenCheck className="h-4 w-4" /> Atividades
               </TabsTrigger>
-              <TabsTrigger
-                value="implementation"
-                className="flex items-center gap-2 w-full cursor-pointer"
-              >
-                <Code className="h-4 w-4" /> Implementação
-              </TabsTrigger>
-              <TabsTrigger
-                value="sandbox"
-                className="flex items-center gap-2 w-full cursor-pointer"
-              >
-                <Zap className="h-4 w-4" /> Sandbox
-              </TabsTrigger>
-              <TabsTrigger
-                value="applications"
-                className="flex items-center gap-2 w-full cursor-pointer"
-              >
-                <Lightbulb className="h-4 w-4" /> Aplicações
-              </TabsTrigger>
             </TabsList>
 
-            {/* Tutorial - Explicação teórica */}
-            <TabsContent value="tutorial">
+            {/* Conteudo - Explicação teórica */}
+            <TabsContent value="conteudo">
               <div className="border rounded-lg p-6 bg-card">
                 <h2 className="text-2xl font-semibold mb-4">
-                  O que é uma Lista?
+                  Teoria sobre Listas
                 </h2>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Uma lista é uma estrutura de dados linear que armazena uma
-                  coleção ordenada de elementos. Diferente de arrays com tamanho
-                  fixo, as listas podem crescer dinamicamente e permitem
-                  inserções e remoções em qualquer posição. Tipos comuns incluem
-                  listas simplesmente encadeadas, duplamente encadeadas e listas
-                  circulares.
+                <p className="text-muted-foreground mb-6">
+                  Aprenda os conceitos fundamentais sobre listas, suas
+                  implementações e aplicações.
                 </p>
-
-                <h3 className="text-xl font-medium mt-6 mb-2">
-                  Operações Básicas
-                </h3>
-                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                  <li>
-                    <span className="font-medium text-foreground">
-                      add/append
-                    </span>
-                    : Adiciona um elemento ao final da lista
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">insert</span>:
-                    Insere um elemento em uma posição específica
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">remove</span>:
-                    Remove um elemento de uma posição específica
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">get</span>:
-                    Obtém o elemento em uma posição específica
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">indexOf</span>
-                    : Encontra a posição da primeira ocorrência de um elemento
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">size</span>:
-                    Retorna o número de elementos na lista
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">isEmpty</span>
-                    : Verifica se a lista está vazia
-                  </li>
-                </ul>
-
-                <h3 className="text-xl font-medium mt-6 mb-2">
-                  Tipos de Listas
-                </h3>
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <h4 className="font-medium">
-                      Lista Simplesmente Encadeada
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      Cada nó contém o dado e uma referência para o próximo nó
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-medium">Lista Duplamente Encadeada</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Cada nó contém o dado e referências para os nós anterior e
-                      próximo
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-medium">Lista Circular</h4>
-                    <p className="text-sm text-muted-foreground">
-                      O último nó aponta para o primeiro, formando um círculo
-                    </p>
-                  </div>
-                </div>
+                <ListTheory tipo={tipoLista} />
               </div>
             </TabsContent>
 
@@ -221,7 +183,7 @@ export default function ListPage() {
                   operações de adição, inserção e remoção para entender melhor o
                   funcionamento.
                 </p>
-                <ListVisualization />
+                <ListVisualization tipo={tipoLista} />
               </div>
             </TabsContent>
 
@@ -235,91 +197,7 @@ export default function ListPage() {
                   Complete os desafios para testar seu conhecimento sobre
                   listas.
                 </p>
-                <ListOperations />
-              </div>
-            </TabsContent>
-
-            {/* Implementação */}
-            <TabsContent value="implementation">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Implementação de Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Veja diferentes maneiras de implementar listas em código.
-                </p>
-                <ListImplementation />
-              </div>
-            </TabsContent>
-
-            {/* Sandbox */}
-            <TabsContent value="sandbox">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Ambiente de Desenvolvimento
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Experimente escrever seu próprio código para manipular listas.
-                </p>
-                <ListSandbox />
-              </div>
-            </TabsContent>
-
-            {/* Aplicações */}
-            <TabsContent value="applications">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Aplicações de Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Conheça exemplos práticos do uso de listas em problemas reais.
-                </p>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Implementação de outras estruturas de dados
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Listas são frequentemente usadas como base para
-                      implementar outras estruturas de dados como pilhas e
-                      filas, aproveitando sua flexibilidade de tamanho e
-                      eficiência em inserções/remoções.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Gerenciamento de memória
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Sistemas operacionais usam listas para gerenciar blocos de
-                      memória livres e alocados, permitindo alocação e liberação
-                      dinâmica de recursos.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Histórico de navegação
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Navegadores web utilizam listas para implementar o
-                      histórico de navegação, permitindo que os usuários voltem
-                      e avancem entre páginas visitadas.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      Representação de grafos
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Listas de adjacências são usadas para representar grafos
-                      de forma eficiente, onde cada vértice mantém uma lista de
-                      seus vizinhos conectados.
-                    </p>
-                  </div>
-                </div>
+                <ListActivity tipo={tipoLista} />
               </div>
             </TabsContent>
           </Tabs>

@@ -1,14 +1,15 @@
-'use client';
-import { SearchForm } from '@/components/search-form';
+"use client";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -16,20 +17,53 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
-} from '@/components/ui/sidebar';
-import { useAppContext } from '@/contexts/AppContext';
-import { CheckCircle, Minus, Plus } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import type * as React from 'react';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/sidebar";
+import { useAppContext } from "@/contexts/AppContext";
+import { CheckCircle, Minus, Plus, Globe2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type * as React from "react";
+import { useEffect, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import { NavUser } from "@/components/nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { dataStructures, progress, currentStructure } = useAppContext();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
-    {},
+    {}
   );
+
+  // Pega dados reais do usuário autenticado
+  const { data: session } = useSession();
+
+  // Busca dados do usuário do localStorage se disponíveis
+  const [localUser, setLocalUser] = useState({
+    name: "",
+    email: "",
+    image: "",
+  });
+
+  useEffect(() => {
+    const name = localStorage.getItem("user_name") || "";
+    const email = localStorage.getItem("user_email") || "";
+    const image = localStorage.getItem("user_image") || "";
+    setLocalUser({ name, email, image });
+  }, [session]);
+
+  const user = {
+    name: localUser.name || session?.user?.name || "User",
+    email: localUser.email || session?.user?.email || "",
+    image: localUser.image || session?.user?.image || "",
+  };
+
+  // Salva os dados do usuário no localStorage sempre que a sessão mudar
+  useEffect(() => {
+    if (session?.user) {
+      localStorage.setItem("user_name", session.user.name || "");
+      localStorage.setItem("user_email", session.user.email || "");
+      localStorage.setItem("user_image", session.user.image || "");
+    }
+  }, [session]);
 
   // Define o item atual como expandido quando a estrutura atual mudar
   useEffect(() => {
@@ -53,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Obtém a data da última visita formatada
   const getLastVisitedText = (structureId: string) => {
     const lastVisited = progress[structureId]?.lastVisited;
-    if (!lastVisited) return '';
+    if (!lastVisited) return "";
 
     // Formate a data relativa (hoje, ontem, ou data específica)
     const today = new Date();
@@ -61,16 +95,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (lastVisited.toDateString() === today.toDateString()) {
-      return 'Visitado hoje';
+      return "Visitado hoje";
     }
     if (lastVisited.toDateString() === yesterday.toDateString()) {
-      return 'Visitado ontem';
+      return "Visitado ontem";
     }
     return `Visitado em ${lastVisited.toLocaleDateString()}`;
   };
 
   return (
-    <Sidebar {...props}>
+    <Sidebar
+      collapsible="icon"
+      className="bg-blue-50 border-r border-blue-200 shadow-sm" // cor de fundo e borda lateral
+      {...props}
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -85,21 +123,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   priority
                 />
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">StructLive</span>
+                  <span className="font-bold text-xl">StructLive</span>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <SearchForm />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <div className="px-4 py-2">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-              Estruturas Básicas
-            </h3>
-          </div>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/estruturas" className="flex items-center gap-2">
+                  <Globe2 className="text-blue-500 text-lg" />
+                  <span className="font-medium">Estruturas de Dados</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Estruturas Básicas</SidebarGroupLabel>
           <SidebarMenu>
             {structuresByComplexity.Básico.map((structure) => (
               <Collapsible
@@ -149,27 +194,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
-                            Implementação
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
-                            Sandbox
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
-                            Aplicações
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                       {progress[structure.id]?.lastVisited && (
                         <div className="px-8 py-1 text-xs text-muted-foreground">
                           {getLastVisitedText(structure.id)}
@@ -182,41 +206,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-
-        {Object.keys(progress).length > 0 && (
-          <SidebarGroup className="mt-6">
-            <div className="px-4 py-2">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Seu progresso
-              </h3>
-              <div className="mt-2 h-2 w-full bg-muted rounded-full overflow-hidden">
-                <div
-                  className="bg-primary h-full"
-                  style={{
-                    width: `${Math.round(
-                      (Object.values(progress).filter((item) => item.completed)
-                        .length /
-                        dataStructures.length) *
-                        100,
-                    )}%`,
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>
-                  {
-                    Object.values(progress).filter((item) => item.completed)
-                      .length
-                  }{' '}
-                  concluídos
-                </span>
-                <span>{dataStructures.length} total</span>
-              </div>
-            </div>
-          </SidebarGroup>
-        )}
       </SidebarContent>
-      <SidebarRail />
+      <SidebarFooter>
+        <NavUser
+          user={user}
+          onLogout={() => signOut({ callbackUrl: "/login" })}
+        />
+      </SidebarFooter>
     </Sidebar>
   );
 }
