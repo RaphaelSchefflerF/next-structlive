@@ -176,20 +176,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
                           <Link href={`/estruturas/${structure.id}`}>
-                            Tutorial
+                            Conteúdo
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#operacoes`}>
+                          <Link href={`/estruturas/${structure.id}`}>
                             Visualização
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}#pratica`}>
+                          <Link href={`/estruturas/${structure.id}`}>
                             Atividades
                           </Link>
                         </SidebarMenuSubButton>
