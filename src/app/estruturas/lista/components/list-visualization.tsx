@@ -2,7 +2,6 @@
 
 // Importando os componentes de visualização específicos para cada tipo de lista
 import LcVisualization from "../tipos/lc/visualization";
-import LeVisualization from "../tipos/le/visualization";
 import LddeVisualization from "../tipos/ldde/visualization";
 import LdseVisualization from "../tipos/ldse/visualization";
 import LeeVisualization from "../tipos/lee/visualization";
@@ -20,8 +19,6 @@ export default function ListVisualization({ tipo }: Props) {
       return <LddeVisualization />;
     case "ldse":
       return <LdseVisualization />;
-    case "le":
-      return <LeVisualization />;
     case "lee":
       return <LeeVisualization />;
     case "les":

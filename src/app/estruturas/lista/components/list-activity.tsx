@@ -4,7 +4,6 @@
 import LcActivity from "../tipos/lc/activity";
 import LddeActivity from "../tipos/ldde/activity";
 import LdseActivity from "../tipos/ldse/activity";
-import LeActivity from "../tipos/le/activity";
 import LeeActivity from "../tipos/lee/activity";
 import LesActivity from "../tipos/les/activity";
 
@@ -20,8 +19,6 @@ export default function ListActivity({ tipo }: Props) {
       return <LddeActivity />;
     case "ldse":
       return <LdseActivity />;
-    case "le":
-      return <LeActivity />;
     case "lee":
       return <LeeActivity />;
     case "les":

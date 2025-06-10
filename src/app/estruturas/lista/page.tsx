@@ -36,7 +36,7 @@ import ListTheory from "@/app/estruturas/lista/components/list-theory";
 export default function ListPage() {
   const { status } = useSession();
   const router = useRouter();
-  const [tipoLista, setTipoLista] = useState("le");
+  const [tipoLista, setTipoLista] = useState("ldse");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -105,7 +105,6 @@ export default function ListPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value='le'>Lista Estática</SelectItem>
                   <SelectItem value='les' disabled>
                     Lista Estática Sequencial
                   </SelectItem>
