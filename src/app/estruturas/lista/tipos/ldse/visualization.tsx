@@ -32,7 +32,7 @@ export default function LdseVisualization() {
   const [logs, setLogs] = useState<string[]>([]);
   const [activeNodeIndex, setActiveNodeIndex] = useState<number | null>(null);
   const [auxPointerIndex, setAuxPointerIndex] = useState<number | null>(null);
-  // const [nextNodeId, setNextNodeId] = useState(4);
+  const [highlightedNextPointerIndex, setHighlightedNextPointerIndex] = useState<number | null>(null);
 
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -68,11 +68,11 @@ export default function LdseVisualization() {
       { value: "B", id: 2 },
       { value: "C", id: 3 },
     ]);
-    // setNextNodeId(4);
     setLogs([]);
     setHighlightedLine(null);
     setActiveNodeIndex(null);
     setAuxPointerIndex(null);
+    setHighlightedNextPointerIndex(null);
   };
 
   const removerFim = async () => {
@@ -81,6 +81,7 @@ export default function LdseVisualization() {
     setLogs([]);
     setActiveNodeIndex(null);
     setAuxPointerIndex(null);
+    setHighlightedNextPointerIndex(null);
 
     log("Iniciando remoção do último nó");
     highlightCodeLine(1);
@@ -131,16 +132,19 @@ export default function LdseVisualization() {
 
       highlightCodeLine(8);
       log("Definindo aux.prox = None");
-      await sleep(1500);
+      setHighlightedNextPointerIndex(currentIndex); // Destaca o ponteiro next do novo último nó
+      await sleep(1200);
 
       highlightCodeLine(9);
       log("Atualizando: ult = aux");
-      await sleep(1500);
+      await sleep(1200);
 
       highlightCodeLine(10);
       log("Decrementando contador: quant -= 1");
       setNodes((prev) => prev.slice(0, -1));
       await sleep(1000);
+
+      setHighlightedNextPointerIndex(null); // Remove o destaque após a animação
     }
 
     log("Remoção concluída");
@@ -148,6 +152,7 @@ export default function LdseVisualization() {
     setActiveNodeIndex(null);
     setAuxPointerIndex(null);
     setHighlightedLine(null);
+    setHighlightedNextPointerIndex(null);
   };
   const codeLines = [
     "1 def remover_fim(self):",
@@ -265,12 +270,26 @@ export default function LdseVisualization() {
                       </div>
 
                       {/* Seta para o próximo nó */}
-                      <div className="flex items-center mx-1 relative">
-                        <div className="w-13 h-1 right-0 top-[-2px] bg-gray-800 absolute"></div>
-                        <div className="w-6 h-1 relative">
-                          <div className="absolute right-[-8px] top-0 w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent transform -translate-y-1/2"></div>
+                      {index < nodes.length - 1 && (
+                        <div className="flex items-center mx-1 relative">
+                          <div
+                            className={`w-13 h-1 right-0 top-[-2px] absolute ${
+                              highlightedNextPointerIndex === index
+                                ? "bg-blue-400 animate-pulse"
+                                : "bg-gray-800"
+                            }`}
+                          ></div>
+                          <div className="w-6 h-1 relative">
+                            <div
+                              className={`absolute right-[-8px] top-0 w-0 h-0 border-l-[12px] ${
+                                highlightedNextPointerIndex === index
+                                  ? "border-l-blue-400 animate-pulse"
+                                  : "border-l-gray-800"
+                              } border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent transform -translate-y-1/2`}
+                            ></div>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   ))}
 
