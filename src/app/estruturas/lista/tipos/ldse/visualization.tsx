@@ -1,6 +1,9 @@
+'use client'
 
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface Node {
   value: string;
@@ -8,6 +11,17 @@ interface Node {
 }
 
 export default function LdseVisualization() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") return null;
+
   const [nodes, setNodes] = useState<Node[]>([
     { value: "A", id: 1 },
     { value: "B", id: 2 },

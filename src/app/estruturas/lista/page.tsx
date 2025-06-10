@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   Breadcrumb,
@@ -32,7 +34,17 @@ import ListVisualization from "@/app/estruturas/lista/components/list-visualizat
 import ListTheory from "@/app/estruturas/lista/components/list-theory";
 
 export default function ListPage() {
+  const { status } = useSession();
+  const router = useRouter();
   const [tipoLista, setTipoLista] = useState("le");
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") return null;
 
   return (
     <SidebarProvider>
