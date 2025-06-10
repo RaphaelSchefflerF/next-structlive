@@ -1,11 +1,11 @@
 "use client";
 
 // Importando os componentes de visualização específicos para cada tipo de lista
-import LcVisualization from "../tipos/lc/visualization";
-import LddeVisualization from "../tipos/ldde/visualization";
-import LdseVisualization from "../tipos/ldse/visualization";
-import LeeVisualization from "../tipos/lee/visualization";
-import LesVisualization from "../tipos/les/visualization";
+import LcVisualization from "../types/lc/visualization";
+import LddeVisualization from "../types/ldde/visualization";
+import LdseVisualization from "../types/ldse/visualization";
+import LeeVisualization from "../types/lee/visualization";
+import LesVisualization from "../types/les/visualization";
 
 type Props = {
   tipo: string;

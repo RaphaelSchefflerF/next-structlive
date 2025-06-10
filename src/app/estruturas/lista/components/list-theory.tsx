@@ -1,11 +1,11 @@
 "use client";
 
 // Importando os componentes de teoria específicos para cada tipo de lista
-import LcTheory from "../tipos/lc/theory";
-import LdseTheory from "../tipos/ldse/theory";
-import LddeTheory from "../tipos/ldde/theory";
-import LeeTheory from "../tipos/lee/theory";
-import LesTheory from "../tipos/les/theory";
+import LcTheory from "../types/lc/theory";
+import LdseTheory from "../types/ldse/theory";
+import LddeTheory from "../types/ldde/theory";
+import LeeTheory from "../types/lee/theory";
+import LesTheory from "../types/les/theory";
 
 type Props = {
   tipo: string;

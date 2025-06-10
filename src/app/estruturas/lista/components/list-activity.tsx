@@ -1,11 +1,11 @@
 "use client";
 
 // Importando os componentes de atividade específicos para cada tipo de lista
-import LcActivity from "../tipos/lc/activity";
-import LddeActivity from "../tipos/ldde/activity";
-import LdseActivity from "../tipos/ldse/activity";
-import LeeActivity from "../tipos/lee/activity";
-import LesActivity from "../tipos/les/activity";
+import LcActivity from "../types/lc/activity";
+import LddeActivity from "../types/ldde/activity";
+import LdseActivity from "../types/ldse/activity";
+import LeeActivity from "../types/lee/activity";
+import LesActivity from "../types/les/activity";
 
 type Props = {
   tipo: string;
