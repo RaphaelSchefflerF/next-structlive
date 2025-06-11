@@ -106,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-blue-50 border-r border-blue-200 shadow-sm" // cor de fundo e borda lateral
+      className="bg-blue-50 border-r border-blue-200 shadow-sm"
       {...props}
     >
       <SidebarHeader>
@@ -115,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
                 <Image
-                  src="/assets/Logo_colorida.png"
+                  src="/assets/Logo.png"
                   alt="StructLive Logo"
                   width={64}
                   height={64}

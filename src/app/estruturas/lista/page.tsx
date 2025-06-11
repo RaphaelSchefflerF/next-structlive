@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   Breadcrumb,
@@ -32,7 +34,17 @@ import ListVisualization from "@/app/estruturas/lista/components/list-visualizat
 import ListTheory from "@/app/estruturas/lista/components/list-theory";
 
 export default function ListPage() {
-  const [tipoLista, setTipoLista] = useState("le");
+  const { status } = useSession();
+  const router = useRouter();
+  const [tipoLista, setTipoLista] = useState("ldse");
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") return null;
 
   return (
     <SidebarProvider>
@@ -93,7 +105,6 @@ export default function ListPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value='le'>Lista Estática</SelectItem>
                   <SelectItem value='les' disabled>
                     Lista Estática Sequencial
                   </SelectItem>

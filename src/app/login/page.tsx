@@ -29,9 +29,9 @@ export default function LoginPage() {
           </div>
 
           {/* Imagem ilustrativa opcional */}
-          <div className='relative w-16 h-16 mb-4'>
+          <div className='relative w-24 h-24 mb-4'>
             <Image
-              src='/assets/Logo_colorida.png'
+              src='/assets/Logo.png'
               alt='StructLive Logo'
               width={500}
               height={500}

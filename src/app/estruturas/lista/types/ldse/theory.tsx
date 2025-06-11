@@ -1,5 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 export default function LdseTheory() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") return null;
+
   return (
     <div className="border rounded-lg p-6 bg-card">
       <h2 className="text-2xl font-semibold mb-4">O que é uma Lista?</h2>
