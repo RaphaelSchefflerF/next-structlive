@@ -1,3 +1,4 @@
+// QuestaoPage.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,6 @@ export default function QuestaoPage() {
   const atividade = atividades[index];
   const alternativa = alternativasSelecionadas[index];
   const respostaCorreta = respostasCorretas[index];
-  const respostaUsuario = alternativasSelecionadas[index];
 
   const handleSubmit = async () => {
     if (!alternativa || !session?.user?.id || !atividade?.id) return;
@@ -76,33 +76,44 @@ export default function QuestaoPage() {
     setPermitirExplicacao((prev) => ({ ...prev, [index]: false }));
   };
 
+  function removerMarkdownBasico(texto: string): string {
+    return texto.replace(/\*{1,2}/g, "");
+  }
+
   const handleGerarExplicacao = async () => {
     if (!session?.user?.id || !atividade?.id || !permitirExplicacao[index])
       return;
 
-    const res = await fetch(`/api/respostas/${atividade.id}`);
-    if (!res.ok) return;
-
-    const data = await res.json();
-    const texto = data.feedback;
-
-    // ⚠️ Primeiro, resetar o feedback visualmente
-    setFeedback((prev) => ({ ...prev, [index]: "" }));
     setMostrarExplicacao((prev) => ({ ...prev, [index]: true }));
 
-    // ⚠️ Garantir que a próxima etapa só ocorra após o reset
-    const caracteres = Array.from(texto);
-    setTimeout(() => {
-      let i = 0;
-      const intervalo = setInterval(() => {
+    let tentativas = 0;
+    const maxTentativas = 10;
+    const intervalo = 2000; // 2 segundos
+    let ultimoTexto = feedback[index] || "";
+
+    const buscarFeedback = async () => {
+      const res = await fetch(`/api/respostas/${atividade.id}`);
+      if (!res.ok) return;
+
+      const data = await res.json();
+      const textoBruto = data.feedback?.trim() || "";
+      const textoLimpo = removerMarkdownBasico(textoBruto);
+
+      if (textoLimpo && textoLimpo !== ultimoTexto) {
+        setFeedback((prev) => ({ ...prev, [index]: textoLimpo }));
+      } else if (tentativas < maxTentativas) {
+        tentativas++;
+        setTimeout(buscarFeedback, intervalo);
+      } else {
+        // Último fallback: ainda não mudou
         setFeedback((prev) => ({
           ...prev,
-          [index]: (prev[index] || "") + caracteres[i],
+          [index]: textoLimpo || "Feedback não disponível.",
         }));
-        i++;
-        if (i >= caracteres.length) clearInterval(intervalo);
-      }, 30);
-    }, 10); // delay mínimo para garantir reatividade
+      }
+    };
+
+    buscarFeedback();
   };
 
   const getDificuldadeClasses = (dificuldade: string) => {
@@ -133,14 +144,13 @@ export default function QuestaoPage() {
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-[minmax(0,600px)_1fr] gap-6'>
-      {/* Coluna da Questão */}
+      {/* Questão */}
       <div>
         <Card className='border-none shadow-none p-0'>
           <div className='max-w-[600px]'>
             <div className='mb-1 text-sm italic font-semibold text-blue-600'>
               Questão {index + 1} de {atividades.length}
             </div>
-            {/* Barra de Progresso */}
             {atividades.length > 0 && (
               <div className='mb-6'>
                 <div className='w-full bg-gray-200 rounded-full h-2.5'>
@@ -191,7 +201,8 @@ export default function QuestaoPage() {
 
                 const isSelecionada = alt.texto === alternativa;
                 const isRespostaCerta = alt.texto === respostaCorreta;
-                const isRespostaUsuario = alt.texto === respostaUsuario;
+                const isRespostaUsuario =
+                  alt.texto === alternativasSelecionadas[index];
 
                 if (respostasEnviadas[index]) {
                   if (isRespostaCerta && isRespostaUsuario) {
@@ -240,7 +251,7 @@ export default function QuestaoPage() {
               <Button
                 onClick={handleSubmit}
                 disabled={!alternativa || respostasEnviadas[index]}
-                className='cursor-pointer w-1/3'
+                className='w-1/3 cursor-pointer'
               >
                 Enviar Resposta
               </Button>
@@ -258,28 +269,23 @@ export default function QuestaoPage() {
         </Card>
       </div>
 
-      {/* Coluna do Feedback */}
+      {/* Feedback */}
       <div className='flex flex-col gap-6 p-4 h-full'>
-        {/* Cabeçalho: Robô + Conteúdo */}
         <div className='flex gap-4 items-start'>
-          {/* Robô + botão */}
           <div className='flex flex-col gap-4 items-start'>
             <img
-              src='https://cdn.dribbble.com/users/42048/screenshots/8350927/robotintro_dribble.gif' // ajuste o path se necessário
+              src='https://cdn.dribbble.com/users/42048/screenshots/8350927/robotintro_dribble.gif'
               alt='Assistente IA'
               className='w-90 h-100% rounded-lg shadow-md'
             />
-
             <Button
               onClick={handleGerarExplicacao}
-              className='w-[160px]'
+              className='w-[160px] cursor-pointer'
               disabled={!permitirExplicacao[index]}
             >
               Gerar Explicação
             </Button>
           </div>
-
-          {/* Texto explicativo + resposta IA */}
           <div className='flex-1'>
             <div className='bg-white rounded-lg shadow-lg border overflow-hidden'>
               <div className='bg-gray-800 text-white px-4 py-3'>
@@ -291,11 +297,10 @@ export default function QuestaoPage() {
                   sua resposta está certa ou errada, com base no conteúdo
                   estudado.
                 </p>
-
                 {mostrarExplicacao[index] && (
                   <div
                     ref={explicacaoRef}
-                    className='bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto text-sm border custom-scrollbar whitespace-pre-wrap'
+                    className='bg-gray-50 p-4 rounded-lg h-[330px] overflow-y-auto text-[0.9rem] border custom-scrollbar whitespace-pre-wrap'
                   >
                     {feedback[index]}
                   </div>

@@ -2,6 +2,8 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
 import { createClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
+import { iniciarSessao, finalizarSessao } from "@/lib/logSessao";
 
 declare module "next-auth" {
   interface Session {
@@ -46,6 +48,13 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (!session.user) return session;
 
+      // Garante que a imagem de perfil do usuário seja propagada para session.user.image
+      if (token?.picture) {
+        session.user.image = token.picture as string;
+      } else if (token?.image) {
+        session.user.image = token.image as string;
+      }
+
       // Se o token.sub estiver definido, usamos diretamente
       if (token?.sub) {
         session.user.id = token.sub;
@@ -67,16 +76,18 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async jwt({ token, user }) {
-      if (user) {
-        // Assegura que token.sub sempre receba algo
-        token.sub = user.id ?? user.email ?? "";
+    async jwt({ token, user, profile }) {
+      // Se for login inicial, user e profile estarão presentes
+      if (profile && profile.image) {
+        token.image = profile.image;
+      } else if (user && user.image) {
+        token.image = user.image;
       }
       return token;
     },
   },
   events: {
-    async signIn({ user }) {
+    async signIn({ user, account, profile }) {
       try {
         const { id, name, email, image } = user as User;
 
@@ -119,8 +130,49 @@ export const authOptions: NextAuthOptions = {
             );
           }
         }
+
+        type ProfileWithMeta = typeof profile & {
+          ip_address?: string | null;
+          user_agent?: string | null;
+        };
+        type AccountWithMeta = typeof account & {
+          ip_address?: string | null;
+          user_agent?: string | null;
+        };
+
+        const ip =
+          (profile as ProfileWithMeta)?.ip_address ||
+          (account as AccountWithMeta)?.ip_address ||
+          null;
+        const userAgent =
+          (profile as ProfileWithMeta)?.user_agent ||
+          (account as AccountWithMeta)?.user_agent ||
+          null;
+        const logId = await iniciarSessao({
+          userId: id,
+          ipAddress: ip,
+          userAgent,
+        });
+        if (logId) {
+          (await cookies()).set("log_sessao_id", logId, {
+            httpOnly: true,
+            sameSite: "lax",
+            path: "/",
+          });
+        }
       } catch (err) {
         console.error("❌ Erro inesperado no evento signIn:", err);
+      }
+    },
+    async signOut() {
+      try {
+        const logId = (await cookies()).get("log_sessao_id")?.value;
+        if (logId) {
+          await finalizarSessao({ logId });
+          (await cookies()).delete("log_sessao_id");
+        }
+      } catch (err) {
+        console.error("❌ Erro ao finalizar log de sessão:", err);
       }
     },
   },

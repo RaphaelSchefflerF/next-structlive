@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import amqp from "amqplib";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { atividadeId, usuarioId, alternativaMarcada } = body;
