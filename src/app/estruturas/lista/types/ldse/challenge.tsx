@@ -1,35 +1,16 @@
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
     BrainIcon,
-    CheckCircle,
     CopyIcon,
-    InfoIcon,
     Loader2Icon,
     PlayIcon,
     TerminalIcon,
-    XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import MonacoEditor from '@monaco-editor/react';
 import Markdown from 'react-markdown';
 import { analyzeCode } from './ai_analysis';
-
-interface ExerciseProps {
-    title: string;
-
-    description: string;
-    validation: (input: string) => boolean;
-}
 
 export default function LdseActivity() {
     const [code, setCode] = useState<string>('');
@@ -42,9 +23,7 @@ export default function LdseActivity() {
             .writeText(code)
             .then(() => toast.success('Código copiado!'))
             .catch(() => toast.error('Não foi possível copiar o código'));
-    };
-
-    // Analisa o código usando IA (Gemini)
+    }; // Analisa o código usando IA com contexto RAG
     const analyze_code_with_ai = async () => {
         if (!code.trim()) {
             toast.error('Digite algum código antes de analisar!');
@@ -53,14 +32,17 @@ export default function LdseActivity() {
 
         try {
             setIs_analyzing(true);
-            setAi_analysis('');
-
+            setAi_analysis(''); // Usa o contexto RAG específico para Lista Simplesmente Encadeada
             const analysis = await analyzeCode(code);
             if (!analysis) {
                 toast.error('Não foi possível obter a análise da IA.');
                 return;
             }
             setAi_analysis(analysis);
+            toast.success('Análise concluída! Veja o feedback abaixo.');
+        } catch (error) {
+            toast.error('Erro ao analisar o código. Tente novamente.');
+            console.error('Erro na análise:', error);
         } finally {
             setIs_analyzing(false);
         }
@@ -74,8 +56,8 @@ export default function LdseActivity() {
                         <div className="flex items-center gap-2">
                             <PlayIcon className="h-4 w-4" />
                             <span className="font-medium">
-                                Desafio Prático: Implementar Lista Simplesmente
-                                Encadeada
+                                Desafio Prático: Implementar Lista Dinâmica
+                                Simplesmente Encadeada
                             </span>
                         </div>
 
@@ -113,7 +95,7 @@ export default function LdseActivity() {
                                 <li>
                                     • Criar uma classe{' '}
                                     <code className="bg-amber-100 px-1 rounded">
-                                        ListaSimplesmenteEncadeada
+                                        ListaDinamicaSimplesmenteEncadeada
                                     </code>{' '}
                                     com ponteiros{' '}
                                     <code className="bg-amber-100 px-1 rounded">

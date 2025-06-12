@@ -35,17 +35,17 @@ import ListTheory from '@/app/estruturas/lista/components/list-theory';
 import ListChallenge from './components/list-challenge';
 
 export default function ListPage() {
-    const { status } = useSession();
-    const router = useRouter();
+    // const { status } = useSession();
+    // const router = useRouter();
     const [tipoLista, setTipoLista] = useState('ldse');
 
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            router.replace('/login');
-        }
-    }, [status, router]);
+    // useEffect(() => {
+    //     if (status === 'unauthenticated') {
+    //         router.replace('/login');
+    //     }
+    // }, [status, router]);
 
-    if (status === 'loading') return null;
+    // if (status === 'loading') return null;
 
     return (
         <SidebarProvider>
