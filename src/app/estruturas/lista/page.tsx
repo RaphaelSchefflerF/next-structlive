@@ -32,6 +32,7 @@ import {
 import ListActivity from "@/app/estruturas/lista/components/list-activity";
 import ListVisualization from "@/app/estruturas/lista/components/list-visualization";
 import ListTheory from "@/app/estruturas/lista/components/list-theory";
+import ListChallenger from "./components/list-challenger";
 
 export default function ListPage() {
   const { status } = useSession();
@@ -162,6 +163,12 @@ export default function ListPage() {
               >
                 <BookOpenCheck className='h-4 w-4' /> Atividades
               </TabsTrigger>
+              <TabsTrigger
+                value='challenger'
+                className='flex items-center gap-2 w-full cursor-pointer'
+              >
+                <List className='h-4 w-4' /> Desafios
+              </TabsTrigger>  
             </TabsList>
 
             {/* Conteudo - Explicação teórica */}
@@ -204,6 +211,19 @@ export default function ListPage() {
                   listas.
                 </p>
                 <ListActivity tipo={tipoLista} />
+              </div>
+            </TabsContent>
+            {/* Desafios */}
+            <TabsContent value='challenger'>
+              <div className='border rounded-lg p-6 bg-card'>
+                <h2 className='text-2xl text-stone-800 font-semibold mb-2'>
+                  Desafios
+                </h2>
+                <p className='text-muted-foreground mb-6'>
+                  Teste suas habilidades com desafios práticos de implementação
+                  e resolução de problemas.
+                </p>
+                <ListChallenger tipo={tipoLista} />
               </div>
             </TabsContent>
           </Tabs>
