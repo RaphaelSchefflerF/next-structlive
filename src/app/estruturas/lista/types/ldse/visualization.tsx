@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import React from "react";
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface Node {
   value: string;
@@ -15,31 +15,32 @@ export default function LdseVisualization() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.replace("/login");
+    if (status === 'unauthenticated') {
+      router.replace('/login');
     }
   }, [status, router]);
 
-  if (status === "loading") return null;
+  if (status === 'loading') return null;
 
   const [nodes, setNodes] = useState<Node[]>([
-    { value: "A", id: 1 },
-    { value: "B", id: 2 },
-    { value: "C", id: 3 },
+    { value: 'A', id: 1 },
+    { value: 'B', id: 2 },
+    { value: 'C', id: 3 },
   ]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [activeNodeIndex, setActiveNodeIndex] = useState<number | null>(null);
   const [auxPointerIndex, setAuxPointerIndex] = useState<number | null>(null);
-  const [highlightedNextPointerIndex, setHighlightedNextPointerIndex] = useState<number | null>(null);
+  const [highlightedNextPointerIndex, setHighlightedNextPointerIndex] =
+    useState<number | null>(null);
 
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
   // Função para centralizar a visualização em um nó específico
   const scrollToNode = (index: number) => {
     setTimeout(() => {
-      const container = document.querySelector(".list-container");
+      const container = document.querySelector('.list-container');
       if (container && nodes.length > 0 && index >= 0 && index < nodes.length) {
         const nodeWidth = 84; // largura aproximada do nó + seta
         const containerWidth = container.clientWidth;
@@ -47,7 +48,7 @@ export default function LdseVisualization() {
           index * nodeWidth - containerWidth / 2 + nodeWidth / 2;
         container.scrollTo({
           left: Math.max(0, scrollLeft),
-          behavior: "smooth",
+          behavior: 'smooth',
         });
       }
     }, 100);
@@ -64,9 +65,9 @@ export default function LdseVisualization() {
   const resetList = () => {
     if (isAnimating) return;
     setNodes([
-      { value: "A", id: 1 },
-      { value: "B", id: 2 },
-      { value: "C", id: 3 },
+      { value: 'A', id: 1 },
+      { value: 'B', id: 2 },
+      { value: 'C', id: 3 },
     ]);
     setLogs([]);
     setHighlightedLine(null);
@@ -83,29 +84,29 @@ export default function LdseVisualization() {
     setAuxPointerIndex(null);
     setHighlightedNextPointerIndex(null);
 
-    log("Iniciando remoção do último nó");
+    log('Iniciando remoção do último nó');
     highlightCodeLine(1);
     await sleep(1000);
 
-    log("Verificando se a lista possui apenas um nó");
+    log('Verificando se a lista possui apenas um nó');
     highlightCodeLine(2);
     await sleep(1000);
 
     if (nodes.length === 1) {
-      log("A lista possui apenas um nó");
+      log('A lista possui apenas um nó');
       await sleep(1000);
 
       highlightCodeLine(3);
-      log("Removendo o único nó: prim = ult = None");
+      log('Removendo o único nó: prim = ult = None');
       await sleep(1000);
 
       highlightCodeLine(10);
-      log("Decrementando contador: quant -= 1");
+      log('Decrementando contador: quant -= 1');
       setNodes([]);
       await sleep(1000);
     } else {
       highlightCodeLine(5);
-      log("aux = prim (Começando do primeiro nó)");
+      log('aux = prim (Começando do primeiro nó)');
       setActiveNodeIndex(0);
       setAuxPointerIndex(0);
       scrollToNode(0);
@@ -113,12 +114,12 @@ export default function LdseVisualization() {
 
       let currentIndex = 0;
       highlightCodeLine(6);
-      log("Verificando se aux.prox é diferente de ult");
+      log('Verificando se aux.prox é diferente de ult');
       await sleep(1000);
 
       while (currentIndex < nodes.length - 2) {
         highlightCodeLine(7);
-        log("Movendo aux para o próximo nó");
+        log('Movendo aux para o próximo nó');
         setActiveNodeIndex(currentIndex + 1);
         setAuxPointerIndex(currentIndex + 1);
         currentIndex++;
@@ -126,28 +127,28 @@ export default function LdseVisualization() {
         await sleep(1500);
 
         highlightCodeLine(6);
-        log("Verificando se aux.prox é diferente de ult");
+        log('Verificando se aux.prox é diferente de ult');
         await sleep(1000);
       }
 
       highlightCodeLine(8);
-      log("Definindo aux.prox = None");
+      log('Definindo aux.prox = None');
       setHighlightedNextPointerIndex(currentIndex); // Destaca o ponteiro next do novo último nó
       await sleep(1200);
 
       highlightCodeLine(9);
-      log("Atualizando: ult = aux");
+      log('Atualizando: ult = aux');
       await sleep(1200);
 
       highlightCodeLine(10);
-      log("Decrementando contador: quant -= 1");
+      log('Decrementando contador: quant -= 1');
       setNodes((prev) => prev.slice(0, -1));
       await sleep(1000);
 
       setHighlightedNextPointerIndex(null); // Remove o destaque após a animação
     }
 
-    log("Remoção concluída");
+    log('Remoção concluída');
     setIsAnimating(false);
     setActiveNodeIndex(null);
     setAuxPointerIndex(null);
@@ -155,16 +156,16 @@ export default function LdseVisualization() {
     setHighlightedNextPointerIndex(null);
   };
   const codeLines = [
-    "1 def remover_fim(self):",
-    "2&nbsp;&nbsp;&nbsp;&nbsp;if self.quant == 1:",
-    "3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.prim = self.ult = None",
-    "4&nbsp;&nbsp;&nbsp;&nbsp;else:",
-    "5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aux = self.prim",
-    "6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while aux.prox != self.ult:",
-    "7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aux = aux.prox",
-    "8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aux.prox = None",
-    "9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.ult = aux",
-    "10&nbsp;&nbsp;&nbsp;&nbsp;self.quant -= 1",
+    '1 def remover_fim(self):',
+    '2&nbsp;&nbsp;&nbsp;&nbsp;if self.quant == 1:',
+    '3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.prim = self.ult = None',
+    '4&nbsp;&nbsp;&nbsp;&nbsp;else:',
+    '5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aux = self.prim',
+    '6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while aux.prox != self.ult:',
+    '7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aux = aux.prox',
+    '8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aux.prox = None',
+    '9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.ult = aux',
+    '10&nbsp;&nbsp;&nbsp;&nbsp;self.quant -= 1',
   ];
 
   return (
@@ -182,17 +183,17 @@ export default function LdseVisualization() {
               <h3 className="text-lg font-semibold">Código sendo executado:</h3>
             </div>
             <div className="p-4  h-full">
-              {" "}
+              {' '}
               <div className="bg-gray-50 p-4 rounded-lg font-mono text-sm leading-6 border">
                 {codeLines.map((line, index) => {
-                  const lineNumber = parseInt(line.split(" ")[0]);
+                  const lineNumber = parseInt(line.split(' ')[0]);
                   return (
                     <div
                       key={index}
                       className={`transition-colors duration-300 px-2 py-1 rounded ${
                         highlightedLine === lineNumber
-                          ? "bg-yellow-300 shadow-sm"
-                          : "hover:bg-gray-100"
+                          ? 'bg-yellow-300 shadow-sm'
+                          : 'hover:bg-gray-100'
                       }`}
                       dangerouslySetInnerHTML={{ __html: line }}
                     />
@@ -205,7 +206,7 @@ export default function LdseVisualization() {
 
         {/* Coluna Direita - Visualização e Controles */}
         <div className="space-y-6">
-          {" "}
+          {' '}
           {/* Container da Visualização da Lista */}
           <div className="relative bg-white p-6 rounded-lg shadow-lg border">
             {/* Indicador de Quantidade */}
@@ -232,14 +233,14 @@ export default function LdseVisualization() {
                     <div key={node.id} className="flex items-center">
                       <div
                         className={`relative transition-all duration-300 ${
-                          activeNodeIndex === index ? "scale-105" : ""
+                          activeNodeIndex === index ? 'scale-105' : ''
                         }`}
                       >
                         <div
                           className={`w-20 h-16 border-2 flex shadow-md transition-colors duration-300 ${
                             activeNodeIndex === index
-                              ? "bg-yellow-200 border-yellow-500 shadow-yellow-300"
-                              : "bg-white border-gray-800"
+                              ? 'bg-yellow-200 border-yellow-500 shadow-yellow-300'
+                              : 'bg-white border-gray-800'
                           }`}
                         >
                           {/* Ponteiros */}
@@ -270,21 +271,21 @@ export default function LdseVisualization() {
                       </div>
 
                       {/* Seta para o próximo nó */}
-                      {index < nodes.length - 1 && (
+                      {index < nodes.length && (
                         <div className="flex items-center mx-1 relative">
                           <div
                             className={`w-13 h-1 right-0 top-[-2px] absolute ${
                               highlightedNextPointerIndex === index
-                                ? "bg-blue-400 animate-pulse"
-                                : "bg-gray-800"
+                                ? 'bg-blue-400 animate-pulse'
+                                : 'bg-gray-800'
                             }`}
                           ></div>
                           <div className="w-6 h-1 relative">
                             <div
                               className={`absolute right-[-8px] top-0 w-0 h-0 border-l-[12px] ${
                                 highlightedNextPointerIndex === index
-                                  ? "border-l-blue-400 animate-pulse"
-                                  : "border-l-gray-800"
+                                  ? 'border-l-blue-400 animate-pulse'
+                                  : 'border-l-gray-800'
                               } border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent transform -translate-y-1/2`}
                             ></div>
                           </div>
@@ -308,8 +309,8 @@ export default function LdseVisualization() {
               disabled={isAnimating || nodes.length === 0}
               className={`px-5 py-2 font-semibold rounded transition-all duration-200 ${
                 isAnimating || nodes.length === 0
-                  ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                  : "bg-green-500 hover:bg-green-600 text-white"
+                  ? 'bg-gray-400 cursor-not-allowed text-gray-200'
+                  : 'bg-green-500 hover:bg-green-600 text-white'
               }`}
             >
               Remover nó final
@@ -320,8 +321,8 @@ export default function LdseVisualization() {
               disabled={isAnimating}
               className={`px-5 py-2 font-semibold rounded transition-all duration-200 ${
                 isAnimating
-                  ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                  : "bg-red-500 hover:bg-red-600 text-white"
+                  ? 'bg-gray-400 cursor-not-allowed text-gray-200'
+                  : 'bg-red-500 hover:bg-red-600 text-white'
               }`}
             >
               Resetar
