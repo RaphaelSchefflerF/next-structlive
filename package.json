@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "start:worker": "ts-node workers/responderWorker.ts",
+    "start:worker": "ts-node -P tsconfig.worker.json workers/responderWorker.ts",
     "lint": "next lint"
   },
   "dependencies": {

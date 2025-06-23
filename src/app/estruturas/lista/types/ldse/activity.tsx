@@ -1,4 +1,3 @@
-// QuestaoPage.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ export default function QuestaoPage() {
   const [respostasEnviadas, setRespostasEnviadas] = useState<{
     [key: number]: boolean;
   }>({});
+
   const [feedback, setFeedback] = useState<{ [key: number]: string }>({});
   const [mostrarExplicacao, setMostrarExplicacao] = useState<{
     [key: number]: boolean;
@@ -143,33 +143,29 @@ export default function QuestaoPage() {
   if (!atividade) return <p>Carregando atividade...</p>;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-[minmax(0,600px)_1fr] gap-6'>
+    <div className='grid grid-cols-1 lg:grid-cols-[minmax(0,600px)_1fr] gap-6'>
       {/* Questão */}
-      <div>
+      <div className='w-full'>
         <Card className='border-none shadow-none p-0'>
-          <div className='max-w-[600px]'>
-            <div className='mb-1 text-sm italic font-semibold text-blue-600'>
-              Questão {index + 1} de {atividades.length}
-            </div>
-            {atividades.length > 0 && (
-              <div className='mb-6'>
-                <div className='w-full bg-gray-200 rounded-full h-2.5'>
-                  <div
-                    className='bg-blue-600 h-2.5 rounded-full transition-all duration-500'
-                    style={{ width: `${progressoPercentual}%` }}
-                  />
-                </div>
-              </div>
-            )}
+          <div className='mb-1 text-sm italic font-semibold text-blue-600'>
+            Questão {index + 1} de {atividades.length}
           </div>
-
+          {atividades.length > 0 && (
+            <div className='mb-6'>
+              <div className='w-full bg-gray-200 rounded-full h-2.5'>
+                <div
+                  className='bg-blue-600 h-2.5 rounded-full transition-all duration-500'
+                  style={{ width: `${progressoPercentual}%` }}
+                />
+              </div>
+            </div>
+          )}
           <CardHeader>
             <CardTitle className='text-lg font-medium text-stone-700'>
               {atividade.titulo}
             </CardTitle>
           </CardHeader>
-
-          <div className='flex flex-wrap gap-2 mt-1 mb-6 max-w-[600px]'>
+          <div className='flex flex-wrap gap-2 mt-1 mb-6'>
             {atividade.estrutura && (
               <span className='text-xs font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded'>
                 {atividade.estrutura}
@@ -195,7 +191,7 @@ export default function QuestaoPage() {
             <div className='space-y-3 mb-4'>
               {atividade.alternativas?.map((alt: any, idx: number) => {
                 let style =
-                  "max-w-[600px] bg-muted hover:bg-muted/70 border border-border text-sm px-4 py-3 rounded-xl flex items-center justify-start gap-3 transition-all duration-150";
+                  "bg-muted hover:bg-muted/70 border border-border text-sm px-4 py-3 rounded-xl flex items-center justify-start gap-3 transition-all duration-150";
                 let textClass = "text-stone-700 font-normal";
                 let badgeClass = "bg-background border border-border";
 
@@ -240,18 +236,17 @@ export default function QuestaoPage() {
                 );
               })}
             </div>
-            <div className='flex justify-between items-center max-w-[600px]'>
+            <div className='flex justify-between items-center'>
               <Button
                 onClick={() => setIndex((prev) => Math.max(0, prev - 1))}
                 disabled={index === 0}
-                className='cursor-pointer'
               >
                 Anterior
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!alternativa || respostasEnviadas[index]}
-                className='w-1/3 cursor-pointer'
+                className='w-1/3'
               >
                 Enviar Resposta
               </Button>
@@ -260,7 +255,6 @@ export default function QuestaoPage() {
                   setIndex((prev) => Math.min(atividades.length - 1, prev + 1))
                 }
                 disabled={index === atividades.length - 1}
-                className='cursor-pointer'
               >
                 Próximo
               </Button>
@@ -271,13 +265,8 @@ export default function QuestaoPage() {
 
       {/* Feedback */}
       <div className='flex flex-col gap-6 p-4 h-full'>
-        <div className='flex gap-4 items-start'>
-          <div className='flex flex-col gap-4 items-start'>
-            <img
-              src='https://cdn.dribbble.com/users/42048/screenshots/8350927/robotintro_dribble.gif'
-              alt='Assistente IA'
-              className='w-90 h-100% rounded-lg shadow-md'
-            />
+        <div className='flex items-start flex-col-reverse lg:flex-col-reverse gap-4'>
+          <div className='flex flex-col gap-4 items-start w-full'>
             <Button
               onClick={handleGerarExplicacao}
               className='w-[160px] cursor-pointer'
@@ -286,21 +275,22 @@ export default function QuestaoPage() {
               Gerar Explicação
             </Button>
           </div>
-          <div className='flex-1'>
+
+          <div className='flex-1 w-full'>
             <div className='bg-white rounded-lg shadow-lg border overflow-hidden'>
               <div className='bg-gray-800 text-white px-4 py-3'>
                 <h3 className='text-sm font-semibold'>Struct AI:</h3>
               </div>
               <div className='p-4 space-y-2'>
                 <p className='text-sm text-gray-600'>
-                  Clique no botão ao lado para que nossa IA te explique por que
+                  Clique no botão abaixo para que nossa IA te explique por que
                   sua resposta está certa ou errada, com base no conteúdo
                   estudado.
                 </p>
                 {mostrarExplicacao[index] && (
                   <div
                     ref={explicacaoRef}
-                    className='bg-gray-50 p-4 rounded-lg h-[330px] overflow-y-auto text-[0.9rem] border custom-scrollbar whitespace-pre-wrap'
+                    className='bg-gray-50 p-4  max-h-[340px]  lg:h-[230px] overflow-y-auto text-[0.8rem] border custom-scrollbar whitespace-pre-wrap'
                   >
                     {feedback[index]}
                   </div>
