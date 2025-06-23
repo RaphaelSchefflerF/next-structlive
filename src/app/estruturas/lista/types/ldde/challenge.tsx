@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 export default function LddeChallenge() {
-  return <div>Desafio da Lista Dinamica Duplamente Encadeada (atividade aqui)</div>;
+    return <div>Desafios da Lista Dinâmica Duplamente Encadeada</div>;
 }
