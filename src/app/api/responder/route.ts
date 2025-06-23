@@ -1,7 +1,8 @@
+// src/app/api/responder/route.ts
 import { NextResponse } from "next/server";
-import amqp from "amqplib";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import { getRabbitMQChannel } from "@/lib/rabbitmq"; // ✅ usa a função compartilhada
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -27,17 +28,12 @@ export async function POST(req: Request) {
       timestamp: new Date().toISOString(),
     };
 
-    const connection = await amqp.connect("amqp://localhost");
-    const channel = await connection.createChannel();
+    const channel = await getRabbitMQChannel(); // ✅ reusa conexão
     const queue = "respostas_ia";
 
-    await channel.assertQueue(queue, { durable: true });
     channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
       persistent: true,
     });
-
-    await channel.close();
-    await connection.close();
 
     return NextResponse.json(
       { success: true, message: "Resposta enviada para avaliação." },
