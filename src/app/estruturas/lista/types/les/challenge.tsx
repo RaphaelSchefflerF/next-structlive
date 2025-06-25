@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 export default function LesChallenge() {
-  return <div>Desafio da Lista Estática Sequencial (atividade aqui)</div>;
+    return <div>Desafios da Lista Estática Sequencial</div>;
 }

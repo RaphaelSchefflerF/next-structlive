@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 export default function LcChallenge() {
-  return <div>Desafio da Lista Circular (atividade aqui)</div>;
+    return <div>Desafios da Lista Circular</div>;
 }

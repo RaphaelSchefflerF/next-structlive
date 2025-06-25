@@ -156,7 +156,9 @@ export default function QuestaoPage() {
                 <div className='w-full bg-gray-200 rounded-full h-2.5'>
                   <div
                     className='bg-blue-600 h-2.5 rounded-full transition-all duration-500'
-                    style={{ width: `${progressoPercentual}%` }}
+                    style={{
+                      width: `${progressoPercentual}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -273,11 +275,6 @@ export default function QuestaoPage() {
       <div className='flex flex-col gap-6 p-4 h-full'>
         <div className='flex gap-4 items-start'>
           <div className='flex flex-col gap-4 items-start'>
-            <img
-              src='https://cdn.dribbble.com/users/42048/screenshots/8350927/robotintro_dribble.gif'
-              alt='Assistente IA'
-              className='w-90 h-100% rounded-lg shadow-md'
-            />
             <Button
               onClick={handleGerarExplicacao}
               className='w-[160px] cursor-pointer'
