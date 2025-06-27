@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import { registrarLogIA } from "@/lib/logIAHelper";
 
 export default function QuestaoPage() {
   const { data: session, status } = useSession();
@@ -52,6 +53,12 @@ export default function QuestaoPage() {
     setRespostasEnviadas((prev) => ({ ...prev, [index]: true }));
     setPermitirExplicacao((prev) => ({ ...prev, [index]: true }));
 
+    // Log da submissão da resposta
+    await registrarLogIA({
+      usuarioId: session.user.id,
+      tipoRequisicao: 'enviar_resposta'
+    });
+
     await fetch("/api/responder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -86,10 +93,16 @@ export default function QuestaoPage() {
 
     setMostrarExplicacao((prev) => ({ ...prev, [index]: true }));
 
+    // Log do início da solicitação de explicação
+    await registrarLogIA({
+      usuarioId: session.user.id,
+      tipoRequisicao: 'solicitar_explicacao'
+    });
+
     let tentativas = 0;
     const maxTentativas = 10;
     const intervalo = 2000; // 2 segundos
-    let ultimoTexto = feedback[index] || "";
+    const ultimoTexto = feedback[index] || "";
 
     const buscarFeedback = async () => {
       const res = await fetch(`/api/respostas/${atividade.id}`);
@@ -101,15 +114,28 @@ export default function QuestaoPage() {
 
       if (textoLimpo && textoLimpo !== ultimoTexto) {
         setFeedback((prev) => ({ ...prev, [index]: textoLimpo }));
+        
+        // Log de sucesso ao receber feedback
+        await registrarLogIA({
+          usuarioId: session.user.id,
+          tipoRequisicao: 'receber_explicacao'
+        });
       } else if (tentativas < maxTentativas) {
         tentativas++;
         setTimeout(buscarFeedback, intervalo);
       } else {
         // Último fallback: ainda não mudou
+        const feedbackFinal = textoLimpo || "Feedback não disponível.";
         setFeedback((prev) => ({
           ...prev,
-          [index]: textoLimpo || "Feedback não disponível.",
+          [index]: feedbackFinal,
         }));
+
+        // Log de timeout/erro
+        await registrarLogIA({
+          usuarioId: session.user.id,
+          tipoRequisicao: 'timeout_explicacao'
+        });
       }
     };
 
