@@ -1,8 +1,8 @@
-'use client';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
+"use client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,15 +10,15 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, BookOpenCheck, Home, List, PlayCircle } from 'lucide-react';
+} from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BookOpen, BookOpenCheck, Home, List, PlayCircle } from "lucide-react";
 
 import {
   Select,
@@ -27,25 +27,25 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
-import ListActivity from '@/app/estruturas/lista/components/list-activity';
-import ListVisualization from '@/app/estruturas/lista/components/list-visualization';
-import ListTheory from '@/app/estruturas/lista/components/list-theory';
-import ListChallenge from './components/list-challenge';
+import ListActivity from "@/app/estruturas/lista/components/list-activity";
+import ListVisualization from "@/app/estruturas/lista/components/list-visualization";
+import ListTheory from "@/app/estruturas/lista/components/list-theory";
+import ListChallenge from "./components/list-challenge";
 
 export default function ListPage() {
   const { status } = useSession();
   const router = useRouter();
-  const [tipoLista, setTipoLista] = useState('ldse');
+  const [tipoLista, setTipoLista] = useState("ldse");
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/login');
+    if (status === "unauthenticated") {
+      router.replace("/login");
     }
   }, [status, router]);
 
-  if (status === 'loading') return null;
+  if (status === "loading") return null;
 
   return (
     <SidebarProvider>
@@ -167,7 +167,7 @@ export default function ListPage() {
                 value="challenge"
                 className="flex items-center gap-2 w-full cursor-pointer"
               >
-                <BookOpenCheck className="h-4 w-4" /> Desafio
+                <List className="h-4 w-4" /> Desafios
               </TabsTrigger>
             </TabsList>
 
