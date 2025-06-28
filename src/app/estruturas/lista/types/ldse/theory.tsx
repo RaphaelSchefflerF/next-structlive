@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function LdseTheory() {
   const { status } = useSession();
@@ -22,17 +23,39 @@ export default function LdseTheory() {
 
       <h3 className="text-xl font-medium mt-6 mb-3">1. Introdução</h3>
       <p className="text-muted-foreground leading-relaxed mb-4">
-        Uma Lista Dinâmica Simplesmente Encadeada (LDSE) é uma estrutura de
-        dados formada por uma sequência de registros chamados de{' '}
-        <strong>nós</strong>, onde cada nó contém informação útil e um campo de
-        ligação (ponteiro) que indica a localização do próximo nó da sequência.
+        Listas dinâmicas são estruturas de dados que podem ser redimensionadas
+        durante a execução do programa, permitindo adicionar ou remover
+        elementos de forma eficiente. Elas são comumente implementadas usando
+        arrays redimensionáveis (como o ArrayList em Java ou o vector em C++) ou
+        listas encadeadas (como as listas simplesmente ou duplamente
+        encadeadas).
       </p>
 
       <p className="text-muted-foreground leading-relaxed mb-4">
-        Diferentemente de arranjos como vetores e matrizes onde os elementos são
-        armazenados em posições consecutivas de memória, numa lista encadeada os
-        elementos podem estar dispersos pela memória, sendo a ligação entre eles
-        feita através de ponteiros.
+        Como vantagens em relação às listas estáticas, especialmente a lista
+        estática sequencial, podese apresentar a flexibilidade no tamanho, pois
+        listas dinâmicas podem crescer ou encolher conforme a necessidade,
+        evitando desperdício de memória ou restrições no número de elementos.
+        Tem-se também inserção e remoção eficientes, por serem encadeadas, pois
+        oferecem inserções e remoções eficientes em qualquer posição, enquanto a
+        lista estática sequencial é eficiente para inserção e remoção no final
+        da lista.
+      </p>
+      <p className="text-muted-foreground leading-relaxed mb-4">
+        Pode-se falar também em facilidade de uso, visto que listas dinâmicas em
+        linguagens de alto nível geralmente oferecem funções prontas para uso
+        que simplificam a manipulação da estrutura de dados. São justamente
+        estas funções que estamos aprendendo a criar aqui.
+      </p>
+
+      <p className="text-muted-foreground leading-relaxed mb-4">
+        Como desvantagens temos a sobrecarga de memória (o overhead), pois
+        requerem armazenamento adicional para ponteiros de referência entre os
+        elementos, e um acesso não tão rápido, visto que o tempo de acesso aos
+        elementos em listas encadeadas é geralmente mais lento do que em arrays,
+        pois não há o acesso indexado, o que requer percorrer a lista até o
+        elemento desejado. Acrescente-se que sua implementação pode ser mais
+        complexa do que listas estáticas.
       </p>
 
       <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
@@ -89,26 +112,20 @@ export default function LdseTheory() {
         <h4 className="text-lg font-medium mb-2">Representação Gráfica</h4>
         <div className="font-mono text-sm bg-background p-3 rounded border">
           <div className="text-center mb-2">
-            ┌─────────┬─────────┐&nbsp;&nbsp;&nbsp;&nbsp;┌─────────┬─────────┐&nbsp;&nbsp;&nbsp;&nbsp;┌─────────┬─────────┐
-            <br />
-            │&nbsp;&nbsp;info&nbsp;&nbsp;│&nbsp;&nbsp;prox&nbsp;&nbsp;│ ────→
-            │&nbsp;&nbsp;info&nbsp;&nbsp;│&nbsp;&nbsp;prox&nbsp;&nbsp;│ ────→
-            │&nbsp;&nbsp;info&nbsp;&nbsp;│&nbsp;&nbsp;NULL&nbsp;&nbsp;│
-            <br />
-            └─────────┴─────────┘&nbsp;&nbsp;&nbsp;&nbsp;└─────────┴─────────┘&nbsp;&nbsp;&nbsp;&nbsp;└─────────┴─────────┘
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nó
-            1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nó
-            2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nó
-            3
+            <Image
+              src="/assets/exemple1.png"
+              alt="Representação Gráfica da LDSE"
+              width={400}
+              height={200}
+            />
           </div>
         </div>
       </div>
 
       <p className="text-muted-foreground leading-relaxed mb-4">
-        O último nó da lista possui o campo de ligação apontando para NULL,
+        O último nó da lista possui o campo de ligação apontando para None,
         indicando o fim da estrutura. Quando a lista está vazia, o ponteiro
-        inicial (cabeça da lista) também aponta para NULL.
+        inicial (cabeça da lista) também aponta para None.
       </p>
 
       <h3 className="text-xl font-medium mt-6 mb-3">
@@ -204,7 +221,7 @@ export default function LdseTheory() {
         </h4>
         <p className="text-yellow-700 text-sm">
           A característica mais importante de uma LDSE é que ela combina a
-          flexibilidade de tamanho dinâmico com a simplicidade de uma ligação
+          flexibilidade de tamanhos dinâmicos com a simplicidade de uma ligação
           unidirecional, tornando-a ideal para aplicações onde o acesso
           sequencial é predominante.
         </p>
@@ -225,7 +242,7 @@ export default function LdseTheory() {
           <p className="text-green-800 text-sm">
             <span className="font-semibold">Cabeça da Lista (Head):</span>{' '}
             Ponteiro que referencia o primeiro nó da lista. Em uma lista vazia,
-            aponta para NULL.
+            aponta para None.
           </p>
         </div>
         <div className="bg-purple-50 border-l-4 border-purple-400 p-3">
@@ -236,7 +253,7 @@ export default function LdseTheory() {
         </div>
         <div className="bg-orange-50 border-l-4 border-orange-400 p-3">
           <p className="text-orange-800 text-sm">
-            <span className="font-semibold">NULL:</span> Valor especial que
+            <span className="font-semibold">None:</span> Valor especial que
             indica fim da lista ou ausência de nó (lista vazia).
           </p>
         </div>
@@ -290,12 +307,12 @@ class Lista:
       <div className="bg-muted/50 rounded-lg p-4 mb-4">
         <h4 className="text-lg font-medium mb-2">Representação Visual</h4>
         <div className="font-mono text-sm bg-background p-3 rounded border">
-          Lista → [info|prox] → [info|prox] → [info|NULL]
-          <br />
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nó
-          1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nó
-          2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nó
-          3
+          <Image
+            src="/assets/exemple2.png"
+            alt="Representação Gráfica da LDSE"
+            width={400}
+            height={200}
+          />
         </div>
       </div>
 
