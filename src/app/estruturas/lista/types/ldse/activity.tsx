@@ -56,7 +56,7 @@ export default function QuestaoPage() {
     // Log da submissão da resposta
     await registrarLogIA({
       usuarioId: session.user.id,
-      tipoRequisicao: 'enviar_resposta'
+      tipoRequisicao: "enviar_resposta",
     });
 
     await fetch("/api/responder", {
@@ -96,12 +96,11 @@ export default function QuestaoPage() {
     // Log do início da solicitação de explicação
     await registrarLogIA({
       usuarioId: session.user.id,
-      tipoRequisicao: 'solicitar_explicacao'
+      tipoRequisicao: "solicitar_explicacao",
     });
 
     let tentativas = 0;
     const maxTentativas = 10;
-    const intervalo = 2000; // 2 segundos
     const ultimoTexto = feedback[index] || "";
 
     const buscarFeedback = async () => {
@@ -114,15 +113,15 @@ export default function QuestaoPage() {
 
       if (textoLimpo && textoLimpo !== ultimoTexto) {
         setFeedback((prev) => ({ ...prev, [index]: textoLimpo }));
-        
+
         // Log de sucesso ao receber feedback
         await registrarLogIA({
           usuarioId: session.user.id,
-          tipoRequisicao: 'receber_explicacao'
+          tipoRequisicao: "receber_explicacao",
         });
       } else if (tentativas < maxTentativas) {
         tentativas++;
-        setTimeout(buscarFeedback, intervalo);
+        buscarFeedback();
       } else {
         // Último fallback: ainda não mudou
         const feedbackFinal = textoLimpo || "Feedback não disponível.";
@@ -134,7 +133,7 @@ export default function QuestaoPage() {
         // Log de timeout/erro
         await registrarLogIA({
           usuarioId: session.user.id,
-          tipoRequisicao: 'timeout_explicacao'
+          tipoRequisicao: "timeout_explicacao",
         });
       }
     };
@@ -161,7 +160,7 @@ export default function QuestaoPage() {
   const progressoRespondido =
     Object.values(respostasEnviadas).filter(Boolean).length;
   const progressoPercentual = Math.round(
-    (progressoRespondido / atividades.length) * 100
+    (progressoRespondido / atividades.length) * 100,
   );
 
   if (status === "loading") return <p>Carregando sessão...</p>;
@@ -169,19 +168,19 @@ export default function QuestaoPage() {
   if (!atividade) return <p>Carregando atividade...</p>;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-[minmax(0,600px)_1fr] gap-6'>
+    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,600px)_1fr] gap-6">
       {/* Questão */}
       <div>
-        <Card className='border-none shadow-none p-0'>
-          <div className='max-w-[600px]'>
-            <div className='mb-1 text-sm italic font-semibold text-blue-600'>
+        <Card className="border-none shadow-none p-0">
+          <div className="max-w-[600px]">
+            <div className="mb-1 text-sm italic font-semibold text-blue-600">
               Questão {index + 1} de {atividades.length}
             </div>
             {atividades.length > 0 && (
-              <div className='mb-6'>
-                <div className='w-full bg-gray-200 rounded-full h-2.5'>
+              <div className="mb-6">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
                   <div
-                    className='bg-blue-600 h-2.5 rounded-full transition-all duration-500'
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
                     style={{
                       width: `${progressoPercentual}%`,
                     }}
@@ -192,21 +191,21 @@ export default function QuestaoPage() {
           </div>
 
           <CardHeader>
-            <CardTitle className='text-lg font-medium text-stone-700'>
+            <CardTitle className="text-lg font-medium text-stone-700">
               {atividade.titulo}
             </CardTitle>
           </CardHeader>
 
-          <div className='flex flex-wrap gap-2 mt-1 mb-6 max-w-[600px]'>
+          <div className="flex flex-wrap gap-2 mt-1 mb-6 max-w-[600px]">
             {atividade.estrutura && (
-              <span className='text-xs font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded'>
+              <span className="text-xs font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded">
                 {atividade.estrutura}
               </span>
             )}
             {atividade.dificuldade && (
               <span
                 className={`text-xs font-bold px-2 py-1 ${getDificuldadeClasses(
-                  atividade.dificuldade
+                  atividade.dificuldade,
                 )} rounded`}
               >
                 {atividade.dificuldade}
@@ -215,12 +214,12 @@ export default function QuestaoPage() {
           </div>
 
           <CardContent>
-            <div className='max-w-[600px]'>
-              <p className='mb-4 text-md text-stone-700'>
+            <div className="max-w-[600px]">
+              <p className="mb-4 text-md text-stone-700">
                 {atividade.descricao}
               </p>
             </div>
-            <div className='space-y-3 mb-4'>
+            <div className="space-y-3 mb-4">
               {atividade.alternativas?.map((alt: any, idx: number) => {
                 let style =
                   "max-w-[600px] bg-muted hover:bg-muted/70 border border-border text-sm px-4 py-3 rounded-xl flex items-center justify-start gap-3 transition-all duration-150";
@@ -268,18 +267,18 @@ export default function QuestaoPage() {
                 );
               })}
             </div>
-            <div className='flex justify-between items-center max-w-[600px]'>
+            <div className="flex justify-between items-center max-w-[600px]">
               <Button
                 onClick={() => setIndex((prev) => Math.max(0, prev - 1))}
                 disabled={index === 0}
-                className='cursor-pointer'
+                className="cursor-pointer"
               >
                 Anterior
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!alternativa || respostasEnviadas[index]}
-                className='w-1/3 cursor-pointer'
+                className="w-1/3 cursor-pointer"
               >
                 Enviar Resposta
               </Button>
@@ -288,7 +287,7 @@ export default function QuestaoPage() {
                   setIndex((prev) => Math.min(atividades.length - 1, prev + 1))
                 }
                 disabled={index === atividades.length - 1}
-                className='cursor-pointer'
+                className="cursor-pointer"
               >
                 Próximo
               </Button>
@@ -298,24 +297,24 @@ export default function QuestaoPage() {
       </div>
 
       {/* Feedback */}
-      <div className='flex flex-col gap-6 p-4 h-full'>
-        <div className='flex gap-4 items-start'>
-          <div className='flex flex-col gap-4 items-start'>
+      <div className="flex flex-col gap-6 p-4 h-full">
+        <div className="flex gap-4 items-start">
+          <div className="flex flex-col gap-4 items-start">
             <Button
               onClick={handleGerarExplicacao}
-              className='w-[160px] cursor-pointer'
+              className="w-[160px] cursor-pointer"
               disabled={!permitirExplicacao[index]}
             >
               Gerar Explicação
             </Button>
           </div>
-          <div className='flex-1'>
-            <div className='bg-white rounded-lg shadow-lg border overflow-hidden'>
-              <div className='bg-gray-800 text-white px-4 py-3'>
-                <h3 className='text-sm font-semibold'>Struct AI:</h3>
+          <div className="flex-1">
+            <div className="bg-white rounded-lg shadow-lg border overflow-hidden">
+              <div className="bg-gray-800 text-white px-4 py-3">
+                <h3 className="text-sm font-semibold">Struct AI:</h3>
               </div>
-              <div className='p-4 space-y-2'>
-                <p className='text-sm text-gray-600'>
+              <div className="p-4 space-y-2">
+                <p className="text-sm text-gray-600">
                   Clique no botão ao lado para que nossa IA te explique por que
                   sua resposta está certa ou errada, com base no conteúdo
                   estudado.
@@ -323,7 +322,7 @@ export default function QuestaoPage() {
                 {mostrarExplicacao[index] && (
                   <div
                     ref={explicacaoRef}
-                    className='bg-gray-50 p-4 rounded-lg h-[330px] overflow-y-auto text-[0.9rem] border custom-scrollbar whitespace-pre-wrap'
+                    className="bg-gray-50 p-4 rounded-lg h-[330px] overflow-y-auto text-[0.9rem] border custom-scrollbar whitespace-pre-wrap"
                   >
                     {feedback[index]}
                   </div>
