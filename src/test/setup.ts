@@ -32,6 +32,8 @@ vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
   },
 }));
 
@@ -51,3 +53,41 @@ Object.defineProperty(window, 'scrollTo', {
 
 // Mock do Element.scrollTo
 Element.prototype.scrollTo = vi.fn();
+
+// Mock do fetch global
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  json: () => Promise.resolve({}),
+});
+
+// Mock do performance
+Object.defineProperty(window, 'performance', {
+  value: {
+    now: vi.fn(() => Date.now()),
+  },
+  writable: true,
+});
+
+// Mock do ResizeObserver
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock do IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock de console para testes mais limpos
+global.console = {
+  ...console,
+  log: vi.fn(),
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};

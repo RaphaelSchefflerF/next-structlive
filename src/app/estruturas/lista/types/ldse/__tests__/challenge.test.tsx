@@ -1,258 +1,352 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import LdseActivity from '../challenge';
+import { analyzeCode } from '../ai_analysis';
+import { toast } from 'sonner';
 
-// Mock do Monaco Editor
+// Mock das dependências
+vi.mock('../ai_analysis');
+vi.mock('sonner');
 vi.mock('@monaco-editor/react', () => ({
-  default: vi.fn(({ onChange, value }) => (
+  default: ({ value, onChange }: any) => (
     <textarea
       data-testid="monaco-editor"
       value={value}
-      onChange={(e) => onChange?.(e.target.value)}
+      onChange={(e) => onChange && onChange(e.target.value)}
     />
-  )),
+  ),
 }));
-
-// Mock da análise de código
-vi.mock('../ai_analysis', () => ({
-  analyzeCode: vi
-    .fn()
-    .mockResolvedValue('Análise mockada do código com Gemini AI'),
+vi.mock('react-markdown', () => ({
+  default: ({ children }: any) => <div data-testid="markdown">{children}</div>,
+}));
+vi.mock('@/components/ui/button', () => ({
+  Button: ({ children, onClick, disabled, variant, size }: any) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      data-variant={variant}
+      data-size={size}
+    >
+      {children}
+    </button>
+  ),
+}));
+vi.mock('@/components/ui/card', () => ({
+  Card: ({ children, className }: any) => (
+    <div className={className}>{children}</div>
+  ),
+  CardContent: ({ children }: any) => <div>{children}</div>,
+  CardHeader: ({ children }: any) => <div>{children}</div>,
+  CardTitle: ({ children }: any) => <h1>{children}</h1>,
+}));
+vi.mock('@/components/ui/tooltip', () => ({
+  TooltipProvider: ({ children }: any) => <div>{children}</div>,
+  Tooltip: ({ children }: any) => <div>{children}</div>,
+  TooltipTrigger: ({ children, asChild }: any) =>
+    asChild ? children : <div>{children}</div>,
+  TooltipContent: ({ children }: any) => <div>{children}</div>,
+}));
+vi.mock('@/components/ui/scroll-area', () => ({
+  ScrollArea: ({ children, className }: any) => (
+    <div className={className}>{children}</div>
+  ),
+}));
+vi.mock('@/components/ui/badge', () => ({
+  Badge: ({ children, variant, className }: any) => (
+    <span data-variant={variant} className={className}>
+      {children}
+    </span>
+  ),
 }));
 
 describe('LdseActivity', () => {
+  const mockAnalyzeCode = vi.mocked(analyzeCode);
+  const mockToast = vi.mocked(toast);
+
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('deve renderizar título do desafio', () => {
-    render(<LdseActivity />);
-
-    expect(
-      screen.getByText(/Desafio Prático: Implementar Lista Dinâmica/),
-    ).toBeDefined();
-  });
-
-  it('deve exibir objetivo do desafio', () => {
-    render(<LdseActivity />);
-
-    expect(
-      screen.getByText(/Implemente uma Lista Dinâmica Simplesmente Encadeada/),
-    ).toBeDefined();
-  });
-
-  it('deve listar todos os requisitos', () => {
-    render(<LdseActivity />);
-
-    expect(screen.getByText(/Criar uma classe.*No/)).toBeDefined();
-    expect(screen.getByText(/inserir_inicio\(dado\)/)).toBeDefined();
-    expect(screen.getByText(/inserir_fim\(dado\)/)).toBeDefined();
-    expect(screen.getByText(/remover_inicio\(\)/)).toBeDefined();
-  });
-
-  it('deve renderizar editor de código', () => {
-    render(<LdseActivity />);
-
-    expect(screen.getByTestId('monaco-editor')).toBeDefined();
-  });
-
-  it('deve permitir copiar código', async () => {
-    render(<LdseActivity />);
-
-    const copyButton = screen.getByText('Copiar');
-    fireEvent.click(copyButton);
-
-    await waitFor(() => {
-      expect(navigator.clipboard.writeText).toHaveBeenCalled();
+    // Mock navigator.clipboard
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
     });
   });
 
-  it('deve mostrar toast de erro quando código está vazio', async () => {
-    const { toast } = await import('sonner');
-
+  it('deve renderizar o componente corretamente', () => {
     render(<LdseActivity />);
 
-    const analyzeButton = screen.getByText('Analisar com IA');
-    fireEvent.click(analyzeButton);
-
-    expect(toast.error).toHaveBeenCalledWith(
-      'Digite algum código antes de analisar!',
-    );
+    expect(
+      screen.getByText(
+        'Desafio Prático: Implementar Lista Dinâmica Simplesmente Encadeada',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Implemente uma Lista Dinâmica Simplesmente Encadeada em Python/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('monaco-editor')).toBeInTheDocument();
   });
 
-  it('deve atualizar código no editor', () => {
+  it('deve exibir todos os requisitos do projeto', () => {
+    render(<LdseActivity />);
+
+    // Verifica se as seções principais estão presentes
+    expect(screen.getByText('Objetivo')).toBeInTheDocument();
+    expect(screen.getByText('Requisitos')).toBeInTheDocument();
+
+    // Verifica alguns elementos específicos do código inline
+    expect(screen.getByText('No')).toBeInTheDocument();
+    expect(screen.getByText('dado')).toBeInTheDocument();
+    expect(screen.getByText('proximo')).toBeInTheDocument();
+
+    // Verifica métodos específicos
+    expect(screen.getByText('inserir_inicio(dado)')).toBeInTheDocument();
+    expect(screen.getByText('inserir_fim(dado)')).toBeInTheDocument();
+    expect(screen.getByText('remover_inicio()')).toBeInTheDocument();
+    expect(screen.getByText('remover_fim()')).toBeInTheDocument();
+    expect(screen.getByText('exibir()')).toBeInTheDocument();
+  });
+
+  it('deve mostrar seções de objetivo e requisitos', () => {
+    render(<LdseActivity />);
+
+    expect(screen.getByText('Objetivo')).toBeInTheDocument();
+    expect(screen.getByText('Requisitos')).toBeInTheDocument();
+  });
+
+  it('deve permitir edição de código no editor Monaco', () => {
     render(<LdseActivity />);
 
     const editor = screen.getByTestId('monaco-editor');
+    expect(editor).toBeInTheDocument();
+
     fireEvent.change(editor, { target: { value: 'class No:\n    pass' } });
-
-    expect((editor as HTMLTextAreaElement).value).toBe('class No:\n    pass');
+    expect(editor).toHaveValue('class No:\n    pass');
   });
 
-  it('deve mostrar loading durante análise', async () => {
-    render(<LdseActivity />);
-
-    // Simula código no editor
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'test code' } });
-
-    const analyzeButton = screen.getByText('Analisar com IA');
-    fireEvent.click(analyzeButton);
-
-    // Verifica se o estado de loading é mostrado
-    expect(screen.getByText('Analisando...')).toBeDefined();
-  });
-
-  it('deve mostrar tooltip ao passar o mouse no botão Analisar com IA', async () => {
-    const { getByText } = render(<LdseActivity />);
-    const analyzeButton = getByText('Analisar com IA');
-
-    // Verifica se o botão existe
-    expect(analyzeButton).toBeDefined();
-  });
-
-  it('deve exibir componente de análise após conclusão', async () => {
+  it('deve copiar código para área de transferência', async () => {
     render(<LdseActivity />);
 
     const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'class No: pass' } });
+    fireEvent.change(editor, { target: { value: 'teste código' } });
 
-    const analyzeButton = screen.getByText('Analisar com IA');
-    fireEvent.click(analyzeButton);
-
-    await waitFor(() => {
-      // Verifica se algum elemento contém o texto Análise da IA (Gemini AI)
-      const elements = document.body.textContent;
-      expect(elements).toContain('Análise da IA (Gemini AI)');
-    });
-  });
-
-  it('deve desabilitar botão Analisar com IA durante análise', async () => {
-    render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(1)' } });
-    const analyzeButton = screen.getByText('Analisar com IA');
-    fireEvent.click(analyzeButton);
-
-    // Verifica se o texto "Analisando..." aparece, indicando que está desabilitado
-    expect(screen.getByText('Analisando...')).toBeDefined();
-
-    // Aguarda o loading sumir
-    await waitFor(() => {
-      expect(screen.queryByText('Analisando...')).toBeNull();
-    });
-  });
-
-  it('deve mostrar toast de sucesso ao copiar código', async () => {
-    const { toast } = await import('sonner');
-    render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(123)' } });
     const copyButton = screen.getByText('Copiar');
     fireEvent.click(copyButton);
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('teste código');
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Código copiado!');
+      expect(mockToast.success).toHaveBeenCalledWith('Código copiado!');
     });
   });
 
-  it('deve mostrar toast de erro ao falhar ao copiar código', async () => {
-    const { toast } = await import('sonner');
-    const originalWriteText = navigator.clipboard.writeText;
-    (navigator.clipboard.writeText as any) = vi
-      .fn()
-      .mockRejectedValue(new Error('fail'));
+  it('deve mostrar erro ao tentar copiar código sem suporte', async () => {
+    // Mock clipboard failure
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi
+          .fn()
+          .mockRejectedValue(new Error('Clipboard not supported')),
+      },
+    });
+
     render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(123)' } });
+
     const copyButton = screen.getByText('Copiar');
     fireEvent.click(copyButton);
+
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
+      expect(mockToast.error).toHaveBeenCalledWith(
         'Não foi possível copiar o código',
       );
     });
-    (navigator.clipboard.writeText as any) = originalWriteText;
   });
 
-  it('não deve exibir análise se IA não retornar nada', async () => {
-    const { analyzeCode } = await import('../ai_analysis');
-    (analyzeCode as any).mockResolvedValueOnce('');
+  it('deve analisar código com IA quando botão é clicado', async () => {
+    const mockAnalysis = 'Análise detalhada do código fornecido';
+    mockAnalyzeCode.mockResolvedValue(mockAnalysis);
+
     render(<LdseActivity />);
+
     const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(1)' } });
+    fireEvent.change(editor, {
+      target: { value: 'class No:\n    def __init__(self):\n        pass' },
+    });
+
     const analyzeButton = screen.getByText('Analisar com IA');
     fireEvent.click(analyzeButton);
+
+    expect(analyzeButton).toHaveTextContent('Analisando...');
+
     await waitFor(() => {
-      expect(screen.queryByText(/Análise da IA/)).toBeNull();
+      expect(mockAnalyzeCode).toHaveBeenCalledWith(
+        'class No:\n    def __init__(self):\n        pass',
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('markdown')).toBeInTheDocument();
+      expect(screen.getByTestId('markdown')).toHaveTextContent(mockAnalysis);
+      expect(mockToast.success).toHaveBeenCalledWith(
+        'Análise concluída! Veja o feedback abaixo.',
+      );
     });
   });
 
-  it('deve permitir múltiplas interações: copiar, analisar, editar', async () => {
+  it('deve mostrar erro quando tentar analisar código vazio', async () => {
     render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(1)' } });
-    const copyButton = screen.getByText('Copiar');
-    fireEvent.click(copyButton);
-    fireEvent.change(editor, { target: { value: 'print(2)' } });
+
     const analyzeButton = screen.getByText('Analisar com IA');
     fireEvent.click(analyzeButton);
+
+    expect(mockToast.error).toHaveBeenCalledWith(
+      'Digite algum código antes de analisar!',
+    );
+    expect(mockAnalyzeCode).not.toHaveBeenCalled();
+  });
+
+  it('deve tratar erro na análise de código', async () => {
+    mockAnalyzeCode.mockRejectedValue(new Error('API Error'));
+
+    render(<LdseActivity />);
+
+    const editor = screen.getByTestId('monaco-editor');
+    fireEvent.change(editor, { target: { value: 'código de teste' } });
+
+    const analyzeButton = screen.getByText('Analisar com IA');
+    fireEvent.click(analyzeButton);
+
     await waitFor(() => {
-      const bodyText = document.body.textContent;
-      expect(bodyText).toContain('Análise da IA');
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'Erro ao analisar o código. Tente novamente.',
+      );
     });
   });
 
-  it('deve renderizar todos os elementos principais', () => {
-    render(<LdseActivity />);
-    expect(screen.getByText(/Desafio Prático/)).toBeDefined();
-    expect(screen.getByText(/Objetivo/)).toBeDefined();
-    expect(screen.getByText(/Requisitos/)).toBeDefined();
-    expect(screen.getByText('Copiar')).toBeDefined();
-    expect(screen.getByText('Analisar com IA')).toBeDefined();
-    expect(screen.getByTestId('monaco-editor')).toBeDefined();
-  });
+  it('deve tratar resposta vazia da IA', async () => {
+    mockAnalyzeCode.mockResolvedValue('');
 
-  it('botão Copiar deve estar sempre habilitado', () => {
     render(<LdseActivity />);
-    const copyButton = screen.getByText('Copiar');
-    expect(copyButton.getAttribute('disabled')).toBeNull();
-  });
 
-  it('botão Analisar com IA deve estar habilitado quando há código', () => {
-    render(<LdseActivity />);
     const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(1)' } });
-    const analyzeButton = screen.getByText('Analisar com IA');
-    expect(analyzeButton.getAttribute('disabled')).toBeNull();
-  });
+    fireEvent.change(editor, { target: { value: 'código de teste' } });
 
-  it('editor aceita código vazio', () => {
-    render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: '' } });
-    expect((editor as HTMLTextAreaElement).value).toBe('');
-  });
-
-  it('componente lida com código grande', () => {
-    render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    const bigCode = 'a'.repeat(10000);
-    fireEvent.change(editor, { target: { value: bigCode } });
-    expect((editor as HTMLTextAreaElement).value).toBe(bigCode);
-  });
-
-  it('deve lidar com erro na análise da IA', async () => {
-    const { toast } = await import('sonner');
-    const { analyzeCode } = await import('../ai_analysis');
-    (analyzeCode as any).mockRejectedValueOnce(new Error('fail'));
-    render(<LdseActivity />);
-    const editor = screen.getByTestId('monaco-editor');
-    fireEvent.change(editor, { target: { value: 'print(1)' } });
     const analyzeButton = screen.getByText('Analisar com IA');
     fireEvent.click(analyzeButton);
+
     await waitFor(() => {
-      // Usando uma verificação mais flexível
-      expect(toast.error).toHaveBeenCalled();
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'Não foi possível obter a análise da IA.',
+      );
     });
+  });
+
+  it('deve exibir tooltip nos botões', () => {
+    render(<LdseActivity />);
+
+    expect(
+      screen.getByText('Copiar código para área de transferência'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Analisar código com Gemini AI'),
+    ).toBeInTheDocument();
+  });
+
+  it('deve mostrar análise da IA quando disponível', async () => {
+    const mockAnalysis = 'Análise: Código bem estruturado!';
+    mockAnalyzeCode.mockResolvedValue(mockAnalysis);
+
+    render(<LdseActivity />);
+
+    const editor = screen.getByTestId('monaco-editor');
+    fireEvent.change(editor, { target: { value: 'class Lista:\n    pass' } });
+
+    const analyzeButton = screen.getByText('Analisar com IA');
+    fireEvent.click(analyzeButton);
+
+    // Aguarda o mock ser chamado
+    await waitFor(() => {
+      expect(mockAnalyzeCode).toHaveBeenCalledWith('class Lista:\n    pass');
+    });
+
+    // Aguarda o título da análise aparecer
+    await waitFor(() => {
+      expect(screen.getByText('Análise da IA (Gemini AI)')).toBeInTheDocument();
+    });
+
+    // Aguarda o conteúdo da análise aparecer
+    await waitFor(() => {
+      const markdownElement = screen.getByTestId('markdown');
+      expect(markdownElement).toBeInTheDocument();
+      expect(markdownElement).toHaveTextContent(mockAnalysis);
+    });
+  });
+
+  it('deve desabilitar botão durante análise', async () => {
+    mockAnalyzeCode.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve('análise'), 100)),
+    );
+
+    render(<LdseActivity />);
+
+    const editor = screen.getByTestId('monaco-editor');
+    fireEvent.change(editor, { target: { value: 'código' } });
+
+    const analyzeButton = screen.getByText('Analisar com IA');
+    fireEvent.click(analyzeButton);
+
+    expect(analyzeButton).toBeDisabled();
+    expect(analyzeButton).toHaveTextContent('Analisando...');
+
+    await waitFor(() => {
+      expect(analyzeButton).not.toBeDisabled();
+      expect(analyzeButton).toHaveTextContent('Analisar com IA');
+    });
+  });
+
+  it('deve limpar análise anterior antes de nova análise', async () => {
+    mockAnalyzeCode.mockResolvedValue('Nova análise');
+
+    render(<LdseActivity />);
+
+    const editor = screen.getByTestId('monaco-editor');
+    fireEvent.change(editor, { target: { value: 'código' } });
+
+    // Primeira análise
+    const analyzeButton = screen.getByText('Analisar com IA');
+    fireEvent.click(analyzeButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('markdown')).toBeInTheDocument();
+    });
+
+    // Segunda análise - deve limpar a anterior
+    fireEvent.click(analyzeButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('markdown')).toHaveTextContent('Nova análise');
+    });
+  });
+
+  it('deve manter código no editor após análise', async () => {
+    mockAnalyzeCode.mockResolvedValue('Análise completa');
+
+    render(<LdseActivity />);
+
+    const editor = screen.getByTestId('monaco-editor');
+    const testCode =
+      'class No:\n    def __init__(self):\n        self.value = None';
+
+    fireEvent.change(editor, { target: { value: testCode } });
+
+    const analyzeButton = screen.getByText('Analisar com IA');
+    fireEvent.click(analyzeButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('markdown')).toBeInTheDocument();
+    });
+
+    expect(editor).toHaveValue(testCode);
   });
 });

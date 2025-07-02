@@ -9,6 +9,19 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.{js,ts}',
+        '**/coverage/**',
+        'src/**/*.test.{js,ts,jsx,tsx}',
+        'src/**/__tests__/**',
+      ],
+    },
   },
   resolve: {
     alias: {
