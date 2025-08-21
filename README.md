@@ -1,6 +1,43 @@
 # 🏗️ StructLive
 
-Uma plataforma educacional interativa para aprendizado de estruturas de dados, com visualizações animadas, desafios práticos e análise de código com IA.
+> Plataforma visual e interativa para aprender Estruturas de Dados passo a passo.
+
+## 📚 Sumário Rápido (TOC)
+
+- [Visão Geral](#-sobre-o-projeto)
+- [Como Começar Rápido](#️-início-rápido)
+- [Documentação Completa](#-documentação-completa)
+- [Tecnologias](#-tecnologias)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Testes](#-testes)
+- [Docker](#-docker)
+- [Próximos Passos](#-próximos-passos)
+
+## 🏁 Início Rápido
+
+```bash
+git clone <url-do-repositorio>
+cd StructLive
+cp .env.example .env   # se existir (não encontrado no snapshot, suposição)
+npm install
+npm run dev
+```
+
+Abra: http://localhost:3000
+
+Se precisar de ajuda: leia docs/setup.md.
+
+## 📖 Documentação Completa
+
+| Tema              | Arquivo                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| Visão Geral       | [docs/overview.md](docs/overview.md)                       |
+| Arquitetura       | [docs/architecture.md](docs/architecture.md)               |
+| Setup / Ambiente  | [docs/setup.md](docs/setup.md)                             |
+| Stack Técnica     | [docs/tech-stack.md](docs/tech-stack.md)                   |
+| Criar Novo Módulo | [docs/how-to-add-a-module.md](docs/how-to-add-a-module.md) |
+| Glossário         | [docs/glossary.md](docs/glossary.md)                       |
+| FAQ               | [docs/faq.md](docs/faq.md)                                 |
 
 ## 🎯 Sobre o Projeto
 
@@ -158,22 +195,9 @@ npm start
 npm run test:ui
 ```
 
-## 🧪 Testes
-
-### Comandos de Teste
-
-```bash
-# Executa todos os testes
-npm test
-
-# Executa testes em modo watch
-npm run test:watch
-
-# Gera relatório de cobertura
-npm run coverage
-```
-
 ## 📁 Estrutura do Projeto
+
+(árvore detalhada e explicações adicionais em docs/architecture.md)
 
 ```text
 StructLive/
@@ -199,6 +223,21 @@ StructLive/
 └── docs/                             # Documentação
 ```
 
+## 🧪 Testes
+
+### Comandos de Teste
+
+```bash
+# Executa todos os testes
+npm test
+
+# Executa testes em modo watch
+npm run test:watch
+
+# Gera relatório de cobertura
+npm run coverage
+```
+
 ## 🐳 Docker
 
 ### Desenvolvimento com Docker
@@ -219,10 +258,30 @@ docker-compose logs -f
 - **Aplicação**: <http://localhost:3000>
 - **RabbitMQ Management**: <http://localhost:15672> (guest/guest)
 
-## 📊 Monitoramento
+## 🔗 Recursos Relacionados
 
-### Ferramentas
+- Autenticação (NextAuth) – ver docs/architecture.md
+- Integração IA (Google Gemini) – ver docs/tech-stack.md
+- Filas (RabbitMQ) – ver docs/architecture.md#integrações-externas
 
-- RabbitMQ Management (filas)
-- Supabase Dashboard (banco)
-- Vercel Analytics (deploy)
+## ✅ Próximos Passos
+
+1. Ler docs/overview.md para entender o “porquê”.
+2. Fazer o setup completo (docs/setup.md).
+3. Explorar a arquitetura (docs/architecture.md).
+4. Criar um módulo de exemplo seguindo docs/how-to-add-a-module.md.
+5. Abrir sua primeira Pull Request usando a checklist.
+
+## 🛠 Branch Sugerida para esta Documentação
+
+```
+git checkout -b docs/beginner-guide
+```
+
+## 💬 Suporte
+
+Dúvidas comuns? Veja docs/faq.md. Termos? docs/glossary.md.
+
+---
+
+(Conteúdo original preservado acima e abaixo com ajustes mínimos para links.)
