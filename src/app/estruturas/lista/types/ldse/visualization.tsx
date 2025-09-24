@@ -64,6 +64,22 @@ export default function LdseVisualization() {
 
   const highlightCodeLine = React.useCallback((lineNumber: number) => {
     setHighlightedLine(lineNumber);
+
+    setTimeout(() => {
+      const container = codeContainerRef.current;
+      if (container && lineNumber > 0) {
+        const lineElement = container.querySelector(
+          `[data-line="${lineNumber}"]`
+        ) as HTMLElement;
+        if (lineElement) {
+          lineElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "nearest",
+          });
+        }
+      }
+    }, 200);
   }, []);
 
   const log = React.useCallback((message: string) => {
@@ -387,20 +403,25 @@ export default function LdseVisualization() {
     const container = codeContainerRef.current;
     if (!container) return;
     const onScroll = () => {
-      const scrollTop = container.scrollTop;
-      for (const child of Array.from(container.children)) {
-        const el = child as HTMLElement;
-        if (el.offsetTop >= scrollTop) {
-          const numSpan = el.querySelector("span")?.textContent;
-          const num = numSpan ? parseInt(numSpan) : null;
-          if (num !== null) highlightCodeLine(num);
-          break;
+      // Só atualizar highlight baseado no scroll se não estivermos animando
+      if (!isAnimating) {
+        const scrollTop = container.scrollTop;
+        for (const child of Array.from(container.children)) {
+          const el = child as HTMLElement;
+          if (el.offsetTop >= scrollTop) {
+            const numSpan = el.querySelector("span")?.textContent;
+            const num = numSpan ? parseInt(numSpan) : null;
+            if (num !== null && num !== highlightedLine) {
+              setHighlightedLine(num);
+            }
+            break;
+          }
         }
       }
     };
     container.addEventListener("scroll", onScroll);
     return () => container.removeEventListener("scroll", onScroll);
-  }, [highlightCodeLine]);
+  }, [isAnimating, highlightedLine]);
 
   if (status === "loading") return null;
 
@@ -614,7 +635,11 @@ export default function LdseVisualization() {
                 {preCodeLines.map((line, idx) => {
                   const lineNumber = idx + 1;
                   return (
-                    <div key={"pre-" + idx} className="flex">
+                    <div
+                      key={"pre-" + idx}
+                      className="flex"
+                      data-line={lineNumber}
+                    >
                       <span className="inline-block w-6 text-right text-gray-500">
                         {lineNumber}
                       </span>

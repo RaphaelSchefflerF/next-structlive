@@ -1,0 +1,103 @@
+name: "Start Release Process"
+
+on:
+  push:
+    branches:
+      - "release/**"
+
+  workflow_dispatch:
+
+jobs:
+  start_release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Configure git"
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: "Extract and validate version from branch"
+        id: versioning
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          if [[ $BRANCH_NAME == release/* ]]; then
+            VERSION=$(echo "$BRANCH_NAME" | cut -d'/' -f2)
+
+            if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "✅ Valid version found in release branch name: $VERSION"
+              echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            else
+              echo "🛑 Error: Invalid release branch name format. Must be 'release/X.Y.Z'."
+              exit 1
+            fi
+          fi
+
+      - name: "Check if tag already exists"
+        run: |
+          if git rev-parse "v${{ steps.versioning.outputs.VERSION }}" >/dev/null 2>&1; then
+            echo "🛑 Error: Tag v${{ steps.versioning.outputs.VERSION }} already exists."
+            exit 1
+          fi
+          echo "✅ Tag does not exist yet."
+
+      - name: "Check if new version is greater than latest tag"
+        run: |
+          LATEST_TAG=$(git tag | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^v//' | sort -V | tail -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "✅ No previous tags found. Skipping version comparison."
+            exit 0
+          fi
+
+          echo "Latest tag: $LATEST_TAG"
+          NEW_VERSION="${{ steps.versioning.outputs.VERSION }}"
+
+          if [ "$(printf '%s\n' "$LATEST_TAG" "$NEW_VERSION" | sort -V | head -n1)" = "$NEW_VERSION" ]; then
+            echo "🛑 Error: New version '$NEW_VERSION' is not greater than '$LATEST_TAG'."
+            exit 1
+          fi
+
+          echo "✅ New version '$NEW_VERSION' is greater."
+
+      - name: "Check for changes against base branch"
+        id: diff_check
+        run: |
+          BASE_BRANCH="main"
+          git fetch origin $BASE_BRANCH
+          COUNT=$(git rev-list --count origin/$BASE_BRANCH..HEAD)
+          echo "Found $COUNT new commits compared to '$BASE_BRANCH'."
+          echo "commit_count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: "Setup GitHub CLI"
+        if: ${{ steps.diff_check.outputs.commit_count > 0 }}
+        uses: cli/cli@v2
+
+      - name: "Create PR if changes exist"
+        if: ${{ steps.diff_check.outputs.commit_count > 0 }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing_pr=$(gh pr list --head "${{ github.ref_name }}" --json number -q '.[0].number')
+          if [ -n "$existing_pr" ]; then
+            echo "✅ PR already exists: #$existing_pr"
+            exit 0
+          fi
+
+          gh pr create \
+            --base main \
+            --title "Release: v${{ steps.versioning.outputs.VERSION }}" \
+            --body "This PR merges release v${{ steps.versioning.outputs.VERSION }} into main for deployment." \
+            --label "release"
+
+      - name: "Skip PR Creation"
+        if: ${{ steps.diff_check.outputs.commit_count == 0 }}
+        run: echo "✅ No new commits. Skipping PR creation."
