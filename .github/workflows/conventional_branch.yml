@@ -1,0 +1,23 @@
+name: "Branch Naming Convention"
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - master
+    types: [opened, synchronize, reopened]
+
+jobs:
+  enforce-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: deepakputhraya/action-branch-name@master
+        with:
+          regex: '^(feature|bugfix|chore)\/[a-z0-9\-]+$|^(hotfix\/[a-z0-9\-]+)|^(release\/[0-9]+\.[0-9]+\.[0-9]+)$'
+          ignore: |
+            master
+            main
+            develop
+          min_length: 8
+          max_length: 60
