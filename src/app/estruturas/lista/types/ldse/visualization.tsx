@@ -3,16 +3,58 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-interface Node {
-  value: string;
-  id: number;
-}
+import {
+  useRemoverFim,
+  RemoverFimInfo,
+  useInserirFim,
+  InserirFimInfo,
+  useRemoverInicio,
+  RemoverInicioInfo,
+  useInserirInicio,
+  InserirInicioInfo,
+  useBuscar,
+  BuscarInfo,
+  useShow,
+  ShowInfo,
+  useRemoverElemento,
+  RemoverElementoInfo,
+  useInserirApos,
+  InserirAposInfo,
+  useInserirAntes,
+  InserirAntesInfo,
+  useTamanhoAtual,
+  TamanhoAtualInfo,
+  useEstaVazia,
+  EstaVaziaInfo,
+  useVerPrimeiro,
+  VerPrimeiroInfo,
+  useVerUltimo,
+  VerUltimoInfo,
+  type Node,
+} from "./functions/index_clean";
 
 export default function LdseVisualization() {
   const { status } = useSession();
   const router = useRouter();
   const codeContainerRef = useRef<HTMLDivElement>(null);
+
+  // Estados
+  const [nodes, setNodes] = useState<Node[]>([
+    { value: "A", id: 1 },
+    { value: "B", id: 2 },
+    { value: "C", id: 3 },
+  ]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number | null>(null);
+  const [auxPointerIndex, setAuxPointerIndex] = useState<number | null>(null);
+  const [highlightedNextPointerIndex, setHighlightedNextPointerIndex] =
+    useState<number | null>(null);
+  const [selectedFunction, setSelectedFunction] =
+    useState<string>("remover_fim");
+  const [inputValue, setInputValue] = useState<string>("D");
+  const [inputValue2, setInputValue2] = useState<string>("B");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -20,13 +62,326 @@ export default function LdseVisualization() {
     }
   }, [status, router]);
 
-  const highlightCodeLine = (lineNumber: number) => {
+  const highlightCodeLine = React.useCallback((lineNumber: number) => {
     setHighlightedLine(lineNumber);
+  }, []);
+
+  const log = React.useCallback((message: string) => {
+    setLogs((prev) => [...prev, `> ${message}`]);
+  }, []);
+
+  // Função para centralizar a visualização em um nó específico
+  const scrollToNode = (index: number) => {
+    setTimeout(() => {
+      const container = document.querySelector(".list-container");
+      if (container && nodes.length > 0 && index >= 0 && index < nodes.length) {
+        const nodeWidth = 84; // largura aproximada do nó + seta
+        const containerWidth = container.clientWidth;
+        const scrollLeft =
+          index * nodeWidth - containerWidth / 2 + nodeWidth / 2;
+        container.scrollTo({
+          left: Math.max(0, scrollLeft),
+          behavior: "smooth",
+        });
+      }
+    }, 100);
   };
 
-  const log = (message: string) => {
-    setLogs((prev) => [...prev, `> ${message}`]);
+  // Hooks das funções
+  const removerFimHook = useRemoverFim({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const inserirFimHook = useInserirFim({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const removerInicioHook = useRemoverInicio({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const inserirInicioHook = useInserirInicio({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const buscarHook = useBuscar({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const showHook = useShow({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const removerElementoHook = useRemoverElemento({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const inserirAposHook = useInserirApos({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const inserirAntesHook = useInserirAntes({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const tamanhoAtualHook = useTamanhoAtual({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const estaVaziaHook = useEstaVazia({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const verPrimeiroHook = useVerPrimeiro({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  const verUltimoHook = useVerUltimo({
+    nodes,
+    setNodes,
+    isAnimating,
+    setIsAnimating,
+    highlightCodeLine,
+    log,
+    setActiveNodeIndex,
+    setAuxPointerIndex,
+    setHighlightedNextPointerIndex,
+    scrollToNode,
+    setLogs,
+    setHighlightedLine,
+  });
+
+  // Configuração das funções disponíveis
+  const functionConfigs = {
+    remover_fim: {
+      hook: removerFimHook,
+      info: RemoverFimInfo,
+    },
+    inserir_fim: {
+      hook: inserirFimHook,
+      info: InserirFimInfo,
+    },
+    remover_inicio: {
+      hook: removerInicioHook,
+      info: RemoverInicioInfo,
+    },
+    inserir_inicio: {
+      hook: inserirInicioHook,
+      info: InserirInicioInfo,
+    },
+    buscar: {
+      hook: buscarHook,
+      info: BuscarInfo,
+    },
+    show: {
+      hook: showHook,
+      info: ShowInfo,
+    },
+    remover_elemento: {
+      hook: removerElementoHook,
+      info: RemoverElementoInfo,
+    },
+    inserir_apos: {
+      hook: inserirAposHook,
+      info: InserirAposInfo,
+    },
+    inserir_antes: {
+      hook: inserirAntesHook,
+      info: InserirAntesInfo,
+    },
+    tamanho_atual: {
+      hook: tamanhoAtualHook,
+      info: TamanhoAtualInfo,
+    },
+    esta_vazia: {
+      hook: estaVaziaHook,
+      info: EstaVaziaInfo,
+    },
+    ver_primeiro: {
+      hook: verPrimeiroHook,
+      info: VerPrimeiroInfo,
+    },
+    ver_ultimo: {
+      hook: verUltimoHook,
+      info: VerUltimoInfo,
+    },
   };
+
+  const currentFunction =
+    functionConfigs[selectedFunction as keyof typeof functionConfigs];
+
+  // Função para executar a operação atual
+  const executeCurrentFunction = async () => {
+    if (selectedFunction === "remover_fim") {
+      await removerFimHook.removerFim();
+    } else if (selectedFunction === "inserir_fim") {
+      await inserirFimHook.inserirFim(inputValue);
+    } else if (selectedFunction === "remover_inicio") {
+      await removerInicioHook.removerInicio();
+    } else if (selectedFunction === "inserir_inicio") {
+      await inserirInicioHook.inserirInicio(inputValue);
+    } else if (selectedFunction === "buscar") {
+      await buscarHook.buscar(inputValue);
+    } else if (selectedFunction === "show") {
+      await showHook.show();
+    } else if (selectedFunction === "remover_elemento") {
+      await removerElementoHook.removerElemento(inputValue);
+    } else if (selectedFunction === "inserir_apos") {
+      await inserirAposHook.inserirApos(inputValue, inputValue2);
+    } else if (selectedFunction === "inserir_antes") {
+      await inserirAntesHook.inserirAntes(inputValue, inputValue2);
+    } else if (selectedFunction === "tamanho_atual") {
+      await tamanhoAtualHook.tamanhoAtual();
+    } else if (selectedFunction === "esta_vazia") {
+      await estaVaziaHook.estaVazia();
+    } else if (selectedFunction === "ver_primeiro") {
+      await verPrimeiroHook.verPrimeiro();
+    } else if (selectedFunction === "ver_ultimo") {
+      await verUltimoHook.verUltimo();
+    }
+  };
+
+  // Verificar se a função atual precisa de input
+  const needsInput =
+    selectedFunction === "inserir_fim" ||
+    selectedFunction === "inserir_inicio" ||
+    selectedFunction === "buscar" ||
+    selectedFunction === "remover_elemento";
+
+  const needsTwoInputs =
+    selectedFunction === "inserir_apos" || selectedFunction === "inserir_antes";
 
   useEffect(() => {
     const container = codeContainerRef.current;
@@ -49,38 +404,6 @@ export default function LdseVisualization() {
 
   if (status === "loading") return null;
 
-  const [nodes, setNodes] = useState<Node[]>([
-    { value: "A", id: 1 },
-    { value: "B", id: 2 },
-    { value: "C", id: 3 },
-  ]);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [activeNodeIndex, setActiveNodeIndex] = useState<number | null>(null);
-  const [auxPointerIndex, setAuxPointerIndex] = useState<number | null>(null);
-  const [highlightedNextPointerIndex, setHighlightedNextPointerIndex] =
-    useState<number | null>(null);
-
-  const sleep = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-  // Função para centralizar a visualização em um nó específico
-  const scrollToNode = (index: number) => {
-    setTimeout(() => {
-      const container = document.querySelector(".list-container");
-      if (container && nodes.length > 0 && index >= 0 && index < nodes.length) {
-        const nodeWidth = 84; // largura aproximada do nó + seta
-        const containerWidth = container.clientWidth;
-        const scrollLeft =
-          index * nodeWidth - containerWidth / 2 + nodeWidth / 2;
-        container.scrollTo({
-          left: Math.max(0, scrollLeft),
-          behavior: "smooth",
-        });
-      }
-    }, 100);
-  };
-
   const resetList = () => {
     if (isAnimating) return;
     setNodes([
@@ -92,86 +415,6 @@ export default function LdseVisualization() {
     setHighlightedLine(null);
     setActiveNodeIndex(null);
     setAuxPointerIndex(null);
-    setHighlightedNextPointerIndex(null);
-  };
-
-  const removerFim = async () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setLogs([]);
-    setActiveNodeIndex(null);
-    setAuxPointerIndex(null);
-    setHighlightedNextPointerIndex(null);
-
-    log("Iniciando remoção do último nó");
-    highlightCodeLine(127); // def remover_fim(self):
-    await sleep(1000);
-
-    log("Verificando se a lista possui apenas um nó");
-    highlightCodeLine(128); // if self.quant == 1:
-    await sleep(1000);
-
-    if (nodes.length === 1) {
-      log("A lista possui apenas um nó");
-      await sleep(1000);
-
-      highlightCodeLine(129); // self.prim = self.ult = None
-      log("Removendo o único nó: prim = ult = None");
-      await sleep(1000);
-
-      highlightCodeLine(136); // self.quant -= 1
-      log("Decrementando contador: quant -= 1");
-      setNodes([]);
-      await sleep(1000);
-    } else {
-      highlightCodeLine(131); // aux = self.prim
-      log("aux = prim (Começando do primeiro nó)");
-      setActiveNodeIndex(0);
-      setAuxPointerIndex(0);
-      scrollToNode(0);
-      await sleep(1500);
-
-      let currentIndex = 0;
-      highlightCodeLine(132); // while aux.prox != self.ult:
-      log("Verificando se aux.prox é diferente de ult");
-      await sleep(1000);
-
-      while (currentIndex < nodes.length - 2) {
-        highlightCodeLine(133); // aux = aux.prox
-        log("Movendo aux para o próximo nó");
-        setActiveNodeIndex(currentIndex + 1);
-        setAuxPointerIndex(currentIndex + 1);
-        currentIndex++;
-        scrollToNode(currentIndex);
-        await sleep(1500);
-
-        highlightCodeLine(132); // while aux.prox != self.ult:
-        log("Verificando se aux.prox é diferente de ult");
-        await sleep(1000);
-      }
-
-      highlightCodeLine(134); // self.ult = aux
-      log("Atualizando: ult = aux");
-      await sleep(1200);
-
-      highlightCodeLine(135); // self.ult.prox = None
-      log("Definindo ult.prox = None");
-      setHighlightedNextPointerIndex(currentIndex); // Destaca o ponteiro next do novo último nó
-      await sleep(1200);
-
-      highlightCodeLine(136); // self.quant -= 1
-      log("Decrementando contador: quant -= 1");
-      setNodes((prev) => prev.slice(0, -1));
-      await sleep(1000);
-
-      setHighlightedNextPointerIndex(null); // Remove o destaque após a animação
-    }
-
-    log("Remoção concluída");
-    setIsAnimating(false);
-    setActiveNodeIndex(null);
-    setAuxPointerIndex(null);
-    setHighlightedLine(null);
     setHighlightedNextPointerIndex(null);
   };
   const preCodeLines = [
@@ -316,9 +559,42 @@ export default function LdseVisualization() {
 
   return (
     <div className="p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">
-        Removendo o último nó de uma lista encadeada
+      <h1 className="text-3xl font-bold mb-4 text-gray-800">
+        {currentFunction.info.title}
       </h1>
+
+      <div className="mb-6">
+        <p className="text-gray-600 mb-4">{currentFunction.info.description}</p>
+        <div className="flex flex-wrap gap-3 items-center">
+          <label className="font-semibold text-gray-700">
+            Selecione a operação:
+          </label>
+          <select
+            value={selectedFunction}
+            onChange={(e) => setSelectedFunction(e.target.value)}
+            disabled={isAnimating}
+            className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
+              isAnimating
+                ? "bg-gray-200 cursor-not-allowed text-gray-500"
+                : "bg-white border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+            }`}
+          >
+            <option value="remover_fim">Remover Fim</option>
+            <option value="inserir_fim">Inserir Fim</option>
+            <option value="remover_inicio">Remover Início</option>
+            <option value="inserir_inicio">Inserir Início</option>
+            <option value="buscar">Buscar</option>
+            <option value="show">Mostrar Lista</option>
+            <option value="remover_elemento">Remover Elemento</option>
+            <option value="inserir_apos">Inserir Após</option>
+            <option value="inserir_antes">Inserir Antes</option>
+            <option value="tamanho_atual">Tamanho Atual</option>
+            <option value="esta_vazia">Está Vazia?</option>
+            <option value="ver_primeiro">Ver Primeiro</option>
+            <option value="ver_ultimo">Ver Último</option>
+          </select>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl">
         {/* Coluna Esquerda - Código e Log */}
@@ -458,18 +734,99 @@ export default function LdseVisualization() {
               )}
             </div>
           </div>
+          {/* Input para valor (quando necessário) */}
+          {needsInput && (
+            <div className="flex flex-wrap gap-3 justify-center mb-4">
+              <label className="font-semibold text-gray-700">Valor:</label>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isAnimating}
+                maxLength={3}
+                className={`px-3 py-1 border rounded font-mono text-center w-16 ${
+                  isAnimating
+                    ? "bg-gray-200 cursor-not-allowed text-gray-500"
+                    : "bg-white border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                }`}
+              />
+            </div>
+          )}
+          {/* Inputs para funções que precisam de dois valores */}
+          {needsTwoInputs && (
+            <div className="flex flex-wrap gap-3 justify-center mb-4">
+              <div className="flex items-center gap-2">
+                <label className="font-semibold text-gray-700">
+                  {selectedFunction === "inserir_apos"
+                    ? "Inserir:"
+                    : "Novo valor:"}
+                </label>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={isAnimating}
+                  maxLength={3}
+                  className={`px-3 py-1 border rounded font-mono text-center w-16 ${
+                    isAnimating
+                      ? "bg-gray-200 cursor-not-allowed text-gray-500"
+                      : "bg-white border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                  }`}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="font-semibold text-gray-700">
+                  {selectedFunction === "inserir_apos" ? "Após:" : "Antes de:"}
+                </label>
+                <input
+                  type="text"
+                  value={inputValue2}
+                  onChange={(e) => setInputValue2(e.target.value)}
+                  disabled={isAnimating}
+                  maxLength={3}
+                  className={`px-3 py-1 border rounded font-mono text-center w-16 ${
+                    isAnimating
+                      ? "bg-gray-200 cursor-not-allowed text-gray-500"
+                      : "bg-white border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                  }`}
+                />
+              </div>
+            </div>
+          )}
           {/* Botões de Controle */}
           <div className="flex flex-wrap gap-3 justify-center">
             <button
-              onClick={removerFim}
-              disabled={isAnimating || nodes.length === 0}
+              onClick={executeCurrentFunction}
+              disabled={
+                isAnimating ||
+                ((selectedFunction === "remover_fim" ||
+                  selectedFunction === "remover_inicio" ||
+                  selectedFunction === "buscar" ||
+                  selectedFunction === "show" ||
+                  selectedFunction === "remover_elemento" ||
+                  selectedFunction === "inserir_apos" ||
+                  selectedFunction === "inserir_antes" ||
+                  selectedFunction === "ver_primeiro" ||
+                  selectedFunction === "ver_ultimo") &&
+                  nodes.length === 0)
+              }
               className={`px-5 py-2 font-semibold rounded transition-all duration-200 ${
-                isAnimating || nodes.length === 0
+                isAnimating ||
+                ((selectedFunction === "remover_fim" ||
+                  selectedFunction === "remover_inicio" ||
+                  selectedFunction === "buscar" ||
+                  selectedFunction === "show" ||
+                  selectedFunction === "remover_elemento" ||
+                  selectedFunction === "inserir_apos" ||
+                  selectedFunction === "inserir_antes" ||
+                  selectedFunction === "ver_primeiro" ||
+                  selectedFunction === "ver_ultimo") &&
+                  nodes.length === 0)
                   ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                  : "bg-green-500 hover:bg-green-600 text-white"
+                  : currentFunction.info.buttonColor + " text-white"
               }`}
             >
-              Remover nó final
+              {currentFunction.info.buttonText}
             </button>
 
             <button
