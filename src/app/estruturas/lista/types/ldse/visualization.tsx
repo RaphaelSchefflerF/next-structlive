@@ -104,27 +104,27 @@ export default function LdseVisualization() {
     setHighlightedNextPointerIndex(null);
 
     log("Iniciando remoção do último nó");
-    highlightCodeLine(126);
+    highlightCodeLine(127); // def remover_fim(self):
     await sleep(1000);
 
     log("Verificando se a lista possui apenas um nó");
-    highlightCodeLine(127);
+    highlightCodeLine(128); // if self.quant == 1:
     await sleep(1000);
 
     if (nodes.length === 1) {
       log("A lista possui apenas um nó");
       await sleep(1000);
 
-      highlightCodeLine(128);
+      highlightCodeLine(129); // self.prim = self.ult = None
       log("Removendo o único nó: prim = ult = None");
       await sleep(1000);
 
-      highlightCodeLine(135);
+      highlightCodeLine(136); // self.quant -= 1
       log("Decrementando contador: quant -= 1");
       setNodes([]);
       await sleep(1000);
     } else {
-      highlightCodeLine(130);
+      highlightCodeLine(131); // aux = self.prim
       log("aux = prim (Começando do primeiro nó)");
       setActiveNodeIndex(0);
       setAuxPointerIndex(0);
@@ -132,12 +132,12 @@ export default function LdseVisualization() {
       await sleep(1500);
 
       let currentIndex = 0;
-      highlightCodeLine(131);
+      highlightCodeLine(132); // while aux.prox != self.ult:
       log("Verificando se aux.prox é diferente de ult");
       await sleep(1000);
 
       while (currentIndex < nodes.length - 2) {
-        highlightCodeLine(132);
+        highlightCodeLine(133); // aux = aux.prox
         log("Movendo aux para o próximo nó");
         setActiveNodeIndex(currentIndex + 1);
         setAuxPointerIndex(currentIndex + 1);
@@ -145,21 +145,21 @@ export default function LdseVisualization() {
         scrollToNode(currentIndex);
         await sleep(1500);
 
-        highlightCodeLine(131);
+        highlightCodeLine(132); // while aux.prox != self.ult:
         log("Verificando se aux.prox é diferente de ult");
         await sleep(1000);
       }
 
-      highlightCodeLine(133);
-      log("Definindo aux.prox = None");
-      setHighlightedNextPointerIndex(currentIndex); // Destaca o ponteiro next do novo último nó
-      await sleep(1200);
-
-      highlightCodeLine(134);
+      highlightCodeLine(134); // self.ult = aux
       log("Atualizando: ult = aux");
       await sleep(1200);
 
-      highlightCodeLine(135);
+      highlightCodeLine(135); // self.ult.prox = None
+      log("Definindo ult.prox = None");
+      setHighlightedNextPointerIndex(currentIndex); // Destaca o ponteiro next do novo último nó
+      await sleep(1200);
+
+      highlightCodeLine(136); // self.quant -= 1
       log("Decrementando contador: quant -= 1");
       setNodes((prev) => prev.slice(0, -1));
       await sleep(1000);
@@ -301,19 +301,17 @@ export default function LdseVisualization() {
     "    def ver_ultimo(self):",
     "        return self.ult.info",
     "",
-  ];
-
-  const removerCodeLines = [
-    "126     def remover_fim(self):",
-    "127         if self.quant == 1:",
-    "128             self.prim = self.ult = None",
-    "129         else:",
-    "130             aux = self.prim",
-    "131             while aux.prox != self.ult:",
-    "132                 aux = aux.prox",
-    "133             self.ult = aux",
-    "134             self.ult.prox = None",
-    "135             self.quant -= 1",
+    "    def remover_fim(self):",
+    "        if self.quant == 1:",
+    "            self.prim = self.ult = None",
+    "        else:",
+    "            aux = self.prim",
+    "            while aux.prox != self.ult:",
+    "                aux = aux.prox",
+    "            self.ult = aux",
+    "            self.ult.prox = None",
+    "            self.quant -= 1",
+    "",
   ];
 
   return (
@@ -337,37 +335,22 @@ export default function LdseVisualization() {
                 ref={codeContainerRef}
               >
                 {/* preCodeLines com numeração */}
-                {preCodeLines.map((line, idx) => (
-                  <div key={"pre-" + idx} className="flex">
-                    <span className="inline-block w-6 text-right text-gray-500">
-                      {idx + 1}
-                    </span>
-                    {/* Preserva a indentação com non-breaking spaces */}
-                    <span className="pl-2">
-                      {line.replace(/\s/g, "\u00A0")}
-                    </span>
-                  </div>
-                ))}
-                {/* removerCodeLines com numeração destacada */}
-                {removerCodeLines.map((line, idx) => {
-                  const num = parseInt(line.trim().split(" ")[0]);
-                  // Também preserva indentação aqui
-                  const content = line
-                    .replace(/^\d+\s*/, "")
-                    .replace(/\s/g, "\u00A0");
+                {preCodeLines.map((line, idx) => {
+                  const lineNumber = idx + 1;
                   return (
-                    <div key={"rem-" + idx} className="flex">
+                    <div key={"pre-" + idx} className="flex">
                       <span className="inline-block w-6 text-right text-gray-500">
-                        {num}
+                        {lineNumber}
                       </span>
+                      {/* Preserva a indentação com non-breaking spaces */}
                       <span
-                        className={`flex-1 pl-2 transition-colors duration-300 rounded ${
-                          highlightedLine === num
+                        className={`pl-2 transition-colors duration-300 rounded ${
+                          highlightedLine === lineNumber
                             ? "bg-yellow-300 shadow-sm"
                             : "hover:bg-gray-100"
                         }`}
                       >
-                        {content}
+                        {line.replace(/\s/g, "\u00A0")}
                       </span>
                     </div>
                   );
