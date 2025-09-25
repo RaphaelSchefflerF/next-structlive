@@ -37,6 +37,7 @@ export default function LdseVisualization() {
   const { status } = useSession();
   const router = useRouter();
   const codeContainerRef = useRef<HTMLDivElement>(null);
+  const logContainerRef = useRef<HTMLDivElement>(null);
 
   // Estados
   const [nodes, setNodes] = useState<Node[]>([
@@ -84,6 +85,14 @@ export default function LdseVisualization() {
 
   const log = React.useCallback((message: string) => {
     setLogs((prev) => [...prev, `> ${message}`]);
+
+    // Auto-scroll to bottom of log container
+    setTimeout(() => {
+      if (logContainerRef.current) {
+        logContainerRef.current.scrollTop =
+          logContainerRef.current.scrollHeight;
+      }
+    }, 100);
   }, []);
 
   // Função para centralizar a visualização em um nó específico
@@ -872,7 +881,10 @@ export default function LdseVisualization() {
               <h3 className="text-lg font-semibold">Log de execução:</h3>
             </div>
             <div className="p-4">
-              <div className="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto text-sm border custom-scrollbar">
+              <div
+                ref={logContainerRef}
+                className="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto text-sm border custom-scrollbar"
+              >
                 {logs.length === 0 ? (
                   <div className="text-gray-500 italic">
                     Nenhuma execução ainda...
