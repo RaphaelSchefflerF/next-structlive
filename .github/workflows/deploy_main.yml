@@ -12,11 +12,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # seu token da Vercel
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} # ID da sua organização
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # ID do projeto
-          working-directory: ./
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy with Vercel
+        run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
