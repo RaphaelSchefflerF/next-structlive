@@ -1,0 +1,38 @@
+name: "Prepare Release Draft"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  draft_release:
+    if: startsWith(github.head_ref, 'release/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Extract version from branch"
+        id: versioning
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          VERSION=$(echo "$BRANCH_NAME" | cut -d'/' -f2)
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "✅ Found version: $VERSION"
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "🛑 Branch must be named 'release/X.Y.Z'"
+            exit 1
+          fi
+
+      - name: "Create Draft Release"
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: false
+          tag_name: v${{ steps.versioning.outputs.VERSION }}
+          name: "Release v${{ steps.versioning.outputs.VERSION }}"
+          body: |
+            🚀 Draft release for version **v${{ steps.versioning.outputs.VERSION }}**.
+            This release will be published automatically once the PR is merged.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

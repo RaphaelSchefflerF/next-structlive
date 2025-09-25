@@ -1,0 +1,58 @@
+name: "Publish Release"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # necessário para criar tag e release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from merge commit
+        id: get_version
+        run: |
+          # pega a mensagem do último commit que veio do merge da release
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Último commit: $COMMIT_MSG"
+
+          # tenta capturar versão no formato vX.Y.Z ou X.Y.Z
+          if [[ "$COMMIT_MSG" =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            echo "Versão detectada: $VERSION"
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "🛑 Nenhuma versão encontrada no commit. Abortando."
+            exit 1
+          fi
+
+      - name: Create Git tag
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          configuration: ".github/changelog-config.json"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          body: ${{ steps.changelog.outputs.changelog }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
