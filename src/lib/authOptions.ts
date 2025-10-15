@@ -4,6 +4,7 @@ import { SupabaseAdapter } from "@auth/supabase-adapter";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { iniciarSessao, finalizarSessao } from "@/lib/logSessao";
+import { iniciarCronJobDiario } from "@/lib/cronJobs";
 
 declare module "next-auth" {
   interface Session {
@@ -28,6 +29,13 @@ const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+// Inicializar cron job uma única vez
+let cronJobIniciado = false;
+if (!cronJobIniciado && process.env.NODE_ENV === "production") {
+  iniciarCronJobDiario();
+  cronJobIniciado = true;
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: SupabaseAdapter({
