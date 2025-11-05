@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
@@ -37,13 +37,26 @@ import ListChallenge from "./components/list-challenge";
 export default function ListPage() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [tipoLista, setTipoLista] = useState("ldse");
+
+  // Lê o parâmetro 'tab' da URL, padrão é 'conteudo'
+  const tabFromUrl = searchParams.get("tab") || "conteudo";
+  const [activeTab, setActiveTab] = useState(tabFromUrl);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
+
+  // Atualiza a aba quando o parâmetro da URL mudar
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   if (status === "loading") return null;
 
@@ -101,7 +114,7 @@ export default function ListPage() {
               Selecione qual estrutura você deseja:
             </span>
             <Select value={tipoLista} onValueChange={setTipoLista}>
-              <SelectTrigger className="w-[220px]">
+              <SelectTrigger className="w-[330px]">
                 <SelectValue placeholder="Selecione o tipo de lista" />
               </SelectTrigger>
               <SelectContent>
@@ -127,7 +140,11 @@ export default function ListPage() {
           </div>
           <Separator className="my-6" />
 
-          <Tabs defaultValue="conteudo" className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList
               className="
                 flex flex-wrap w-full mb-4
@@ -174,28 +191,13 @@ export default function ListPage() {
             {/* Conteudo - Explicação teórica */}
             <TabsContent value="conteudo">
               <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Teoria sobre Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Aprenda os conceitos fundamentais sobre listas, suas
-                  implementações e aplicações.
-                </p>
                 <ListTheory tipo={tipoLista} />
               </div>
             </TabsContent>
 
             {/* Visualização interativa */}
             <TabsContent value="visualization">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Visualização de Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Visualize o comportamento de uma lista e interaja com
-                  operações de adição, inserção e remoção para entender melhor o
-                  funcionamento.
-                </p>
+              <div className="border rounded-lg bg-card">
                 <ListVisualization tipo={tipoLista} />
               </div>
             </TabsContent>
