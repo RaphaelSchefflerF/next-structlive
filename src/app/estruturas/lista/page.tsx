@@ -101,7 +101,7 @@ export default function ListPage() {
               Selecione qual estrutura você deseja:
             </span>
             <Select value={tipoLista} onValueChange={setTipoLista}>
-              <SelectTrigger className="w-[220px]">
+              <SelectTrigger className="w-[330px]">
                 <SelectValue placeholder="Selecione o tipo de lista" />
               </SelectTrigger>
               <SelectContent>
@@ -174,13 +174,6 @@ export default function ListPage() {
             {/* Conteudo - Explicação teórica */}
             <TabsContent value="conteudo">
               <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Teoria sobre Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Aprenda os conceitos fundamentais sobre listas, suas
-                  implementações e aplicações.
-                </p>
                 <ListTheory tipo={tipoLista} />
               </div>
             </TabsContent>

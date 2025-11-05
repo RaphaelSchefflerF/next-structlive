@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import React, { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LdseTheory() {
   const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/login');
+    if (status === "unauthenticated") {
+      router.replace("/login");
     }
   }, [status, router]);
 
-  if (status === 'loading') return null;
+  if (status === "loading") return null;
 
   return (
-    <div className="border rounded-lg p-6 bg-card">
+    <div>
       <h2 className="text-2xl font-semibold mb-4">
         Lista Dinâmica Simplesmente Encadeada (LDSE)
       </h2>
@@ -240,7 +240,7 @@ export default function LdseTheory() {
         </div>
         <div className="bg-green-50 border-l-4 border-green-400 p-3">
           <p className="text-green-800 text-sm">
-            <span className="font-semibold">Cabeça da Lista (Head):</span>{' '}
+            <span className="font-semibold">Cabeça da Lista (Head):</span>{" "}
             Ponteiro que referencia o primeiro nó da lista. Em uma lista vazia,
             aponta para None.
           </p>
@@ -279,13 +279,13 @@ export default function LdseTheory() {
         <li>
           <span className="font-medium text-foreground">
             Campo de dados (info):
-          </span>{' '}
+          </span>{" "}
           armazena a informação útil do nó
         </li>
         <li>
           <span className="font-medium text-foreground">
             Campo de ligação (prox):
-          </span>{' '}
+          </span>{" "}
           contém o endereço do próximo nó da lista
         </li>
       </ul>
@@ -468,13 +468,13 @@ def libera_lista(lista):
               <li>
                 <span className="font-medium text-foreground">
                   Acesso por posição:
-                </span>{' '}
+                </span>{" "}
                 O(n)
               </li>
               <li>
                 <span className="font-medium text-foreground">
                   Verificar vazia:
-                </span>{' '}
+                </span>{" "}
                 O(1)
               </li>
             </ul>
@@ -487,25 +487,25 @@ def libera_lista(lista):
               <li>
                 <span className="font-medium text-foreground">
                   Inserção no início:
-                </span>{' '}
+                </span>{" "}
                 O(1)
               </li>
               <li>
                 <span className="font-medium text-foreground">
                   Inserção no final:
-                </span>{' '}
+                </span>{" "}
                 O(n)
               </li>
               <li>
                 <span className="font-medium text-foreground">
                   Remoção no início:
-                </span>{' '}
+                </span>{" "}
                 O(1)
               </li>
               <li>
                 <span className="font-medium text-foreground">
                   Remoção por valor:
-                </span>{' '}
+                </span>{" "}
                 O(n)
               </li>
             </ul>
@@ -516,29 +516,29 @@ def libera_lista(lista):
       <h3 className="text-xl font-medium mt-6 mb-3">Vantagens</h3>
       <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
         <li>
-          <span className="font-medium text-foreground">Tamanho dinâmico:</span>{' '}
+          <span className="font-medium text-foreground">Tamanho dinâmico:</span>{" "}
           Pode crescer e diminuir durante a execução
         </li>
         <li>
           <span className="font-medium text-foreground">
             Uso eficiente de memória:
-          </span>{' '}
+          </span>{" "}
           Aloca apenas o espaço necessário
         </li>
         <li>
           <span className="font-medium text-foreground">
             Inserção/remoção eficiente no início:
-          </span>{' '}
+          </span>{" "}
           Operações O(1)
         </li>
         <li>
-          <span className="font-medium text-foreground">Flexibilidade:</span>{' '}
+          <span className="font-medium text-foreground">Flexibilidade:</span>{" "}
           Facilita implementação de outras estruturas
         </li>
         <li>
           <span className="font-medium text-foreground">
             Sem limitação prévia de tamanho:
-          </span>{' '}
+          </span>{" "}
           Limitado apenas pela memória disponível
         </li>
       </ul>
@@ -548,31 +548,31 @@ def libera_lista(lista):
         <li>
           <span className="font-medium text-foreground">
             Acesso sequencial:
-          </span>{' '}
+          </span>{" "}
           Não permite acesso direto aos elementos
         </li>
         <li>
           <span className="font-medium text-foreground">
             Overhead de memória:
-          </span>{' '}
+          </span>{" "}
           Espaço adicional para armazenar ponteiros
         </li>
         <li>
           <span className="font-medium text-foreground">
             Navegação unidirecional:
-          </span>{' '}
+          </span>{" "}
           Não é possível retroceder facilmente
         </li>
         <li>
           <span className="font-medium text-foreground">
             Localidade de cache ruim:
-          </span>{' '}
+          </span>{" "}
           Elementos podem estar dispersos na memória
         </li>
         <li>
           <span className="font-medium text-foreground">
             Maior complexidade:
-          </span>{' '}
+          </span>{" "}
           Gerenciamento de ponteiros aumenta a complexidade
         </li>
       </ul>
@@ -582,31 +582,31 @@ def libera_lista(lista):
         <li>
           <span className="font-medium text-foreground">
             Implementação de pilhas e filas:
-          </span>{' '}
+          </span>{" "}
           Base para outras estruturas de dados
         </li>
         <li>
           <span className="font-medium text-foreground">
             Sistemas de histórico:
-          </span>{' '}
+          </span>{" "}
           Undo/redo em editores de texto
         </li>
         <li>
           <span className="font-medium text-foreground">
             Representação de polinômios:
-          </span>{' '}
+          </span>{" "}
           Em sistemas de álgebra computacional
         </li>
         <li>
           <span className="font-medium text-foreground">
             Listas de adjacência:
-          </span>{' '}
+          </span>{" "}
           Em representação de grafos
         </li>
         <li>
           <span className="font-medium text-foreground">
             Gerenciamento de memória livre:
-          </span>{' '}
+          </span>{" "}
           Em sistemas operacionais
         </li>
       </ul>
