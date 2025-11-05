@@ -1,59 +1,59 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BrainIcon,
   CopyIcon,
   Loader2Icon,
   PlayIcon,
   TerminalIcon,
-} from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import MonacoEditor from '@monaco-editor/react';
-import Markdown from 'react-markdown';
-import { analyzeCode } from './ai_analysis';
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import MonacoEditor from "@monaco-editor/react";
+import Markdown from "react-markdown";
+import { analyzeCode } from "./ai_analysis";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 export default function LdseActivity() {
-  const [code, setCode] = useState<string>('');
-  const [ai_analysis, setAi_analysis] = useState<string>('');
+  const [code, setCode] = useState<string>("");
+  const [ai_analysis, setAi_analysis] = useState<string>("");
   const [is_analyzing, setIs_analyzing] = useState<boolean>(false);
 
   // Copia o código para a área de transferência
   const copy_code = () => {
     navigator.clipboard
       .writeText(code)
-      .then(() => toast.success('Código copiado!'))
-      .catch(() => toast.error('Não foi possível copiar o código'));
+      .then(() => toast.success("Código copiado!"))
+      .catch(() => toast.error("Não foi possível copiar o código"));
   };
 
   // Analisa o código usando IA com contexto RAG
   const analyze_code_with_ai = async () => {
     if (!code.trim()) {
-      toast.error('Digite algum código antes de analisar!');
+      toast.error("Digite algum código antes de analisar!");
       return;
     }
 
     try {
       setIs_analyzing(true);
-      setAi_analysis(''); // Limpa análise anterior
+      setAi_analysis(""); // Limpa análise anterior
       const analysis = await analyzeCode(code);
       if (!analysis) {
-        toast.error('Não foi possível obter a análise da IA.');
+        toast.error("Não foi possível obter a análise da IA.");
         return;
       }
       setAi_analysis(analysis);
-      toast.success('Análise concluída! Veja o feedback abaixo.');
+      toast.success("Análise concluída! Veja o feedback abaixo.");
     } catch (error) {
-      toast.error('Erro ao analisar o código. Tente novamente.');
-      console.error('Erro na análise:', error);
+      toast.error("Erro ao analisar o código. Tente novamente.");
+      console.error("Erro na análise:", error);
     } finally {
       setIs_analyzing(false);
     }
@@ -98,45 +98,45 @@ export default function LdseActivity() {
             </h4>
             <ul className="text-sm text-amber-800 space-y-1">
               <li>
-                • Criar uma classe{' '}
+                • Criar uma classe{" "}
                 <code className="bg-amber-100 px-1 rounded">No</code> com
-                atributos{' '}
-                <code className="bg-amber-100 px-1 rounded">dado</code> e{' '}
+                atributos{" "}
+                <code className="bg-amber-100 px-1 rounded">dado</code> e{" "}
                 <code className="bg-amber-100 px-1 rounded">proximo</code>
               </li>
               <li>
-                • Criar uma classe{' '}
+                • Criar uma classe{" "}
                 <code className="bg-amber-100 px-1 rounded">
                   ListaDinamicaSimplesmenteEncadeada
-                </code>{' '}
-                com ponteiros{' '}
-                <code className="bg-amber-100 px-1 rounded">primeiro</code> e{' '}
+                </code>{" "}
+                com ponteiros{" "}
+                <code className="bg-amber-100 px-1 rounded">primeiro</code> e{" "}
                 <code className="bg-amber-100 px-1 rounded">ultimo</code>
               </li>
               <li>
-                • Implementar método{' '}
+                • Implementar método{" "}
                 <code className="bg-amber-100 px-1 rounded">
                   inserir_inicio(dado)
                 </code>
               </li>
               <li>
-                • Implementar método{' '}
+                • Implementar método{" "}
                 <code className="bg-amber-100 px-1 rounded">
                   inserir_fim(dado)
                 </code>
               </li>
               <li>
-                • Implementar método{' '}
+                • Implementar método{" "}
                 <code className="bg-amber-100 px-1 rounded">
                   remover_inicio()
                 </code>
               </li>
               <li>
-                • Implementar método{' '}
+                • Implementar método{" "}
                 <code className="bg-amber-100 px-1 rounded">remover_fim()</code>
               </li>
               <li>
-                • Implementar método{' '}
+                • Implementar método{" "}
                 <code className="bg-amber-100 px-1 rounded">exibir()</code>
               </li>
               <li>• Tratar casos especiais (lista vazia, um único elemento)</li>
@@ -203,16 +203,16 @@ export default function LdseActivity() {
                   height="600px"
                   defaultLanguage="python"
                   value={code}
-                  onChange={(value) => setCode(value ?? '')}
+                  onChange={(value) => setCode(value ?? "")}
                   theme="vs-dark"
                   options={{
                     fontSize: 14,
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
-                    wordWrap: 'on',
-                    fontFamily: 'Fira Mono, monospace',
+                    wordWrap: "on",
+                    fontFamily: "Fira Mono, monospace",
                     automaticLayout: true,
-                    lineNumbers: 'on',
+                    lineNumbers: "on",
                     tabSize: 2,
                     formatOnPaste: true,
                     formatOnType: true,

@@ -187,15 +187,7 @@ export default function ListPage() {
 
             {/* Visualização interativa */}
             <TabsContent value="visualization">
-              <div className="border rounded-lg p-6 bg-card">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Visualização de Listas
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Visualize o comportamento de uma lista e interaja com
-                  operações de adição, inserção e remoção para entender melhor o
-                  funcionamento.
-                </p>
+              <div className="border rounded-lg bg-card">
                 <ListVisualization tipo={tipoLista} />
               </div>
             </TabsContent>
