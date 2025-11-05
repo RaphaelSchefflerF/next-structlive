@@ -4,39 +4,29 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  useRemoverFim,
   RemoverFimInfo,
-  useInserirFim,
   InserirFimInfo,
-  useRemoverInicio,
   RemoverInicioInfo,
-  useInserirInicio,
   InserirInicioInfo,
-  useBuscar,
   BuscarInfo,
-  useShow,
   ShowInfo,
-  useRemoverElemento,
   RemoverElementoInfo,
-  useInserirApos,
   InserirAposInfo,
-  useInserirAntes,
   InserirAntesInfo,
-  useTamanhoAtual,
   TamanhoAtualInfo,
-  useEstaVazia,
   EstaVaziaInfo,
-  useVerPrimeiro,
   VerPrimeiroInfo,
-  useVerUltimo,
   VerUltimoInfo,
   type Node,
 } from "./functions/index_clean";
+import { useVisualizationHooks } from "./hooks/useVisualizationHooks";
+import { preCodeLines } from "./constants/codeLines";
 
 export default function LdseVisualization() {
   const { status } = useSession();
   const router = useRouter();
   const codeContainerRef = useRef<HTMLDivElement>(null);
+  const logContainerRef = useRef<HTMLDivElement>(null);
 
   // Estados
   const [nodes, setNodes] = useState<Node[]>([
@@ -84,6 +74,14 @@ export default function LdseVisualization() {
 
   const log = React.useCallback((message: string) => {
     setLogs((prev) => [...prev, `> ${message}`]);
+
+    // Auto-scroll to bottom of log container
+    setTimeout(() => {
+      if (logContainerRef.current) {
+        logContainerRef.current.scrollTop =
+          logContainerRef.current.scrollHeight;
+      }
+    }, 100);
   }, []);
 
   // Função para centralizar a visualização em um nó específico
@@ -104,187 +102,21 @@ export default function LdseVisualization() {
   };
 
   // Hooks das funções
-  const removerFimHook = useRemoverFim({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const inserirFimHook = useInserirFim({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const removerInicioHook = useRemoverInicio({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const inserirInicioHook = useInserirInicio({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const buscarHook = useBuscar({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const showHook = useShow({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const removerElementoHook = useRemoverElemento({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const inserirAposHook = useInserirApos({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const inserirAntesHook = useInserirAntes({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const tamanhoAtualHook = useTamanhoAtual({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const estaVaziaHook = useEstaVazia({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const verPrimeiroHook = useVerPrimeiro({
-    nodes,
-    setNodes,
-    isAnimating,
-    setIsAnimating,
-    highlightCodeLine,
-    log,
-    setActiveNodeIndex,
-    setAuxPointerIndex,
-    setHighlightedNextPointerIndex,
-    scrollToNode,
-    setLogs,
-    setHighlightedLine,
-  });
-
-  const verUltimoHook = useVerUltimo({
+  const {
+    removerFimHook,
+    inserirFimHook,
+    removerInicioHook,
+    inserirInicioHook,
+    buscarHook,
+    showHook,
+    removerElementoHook,
+    inserirAposHook,
+    inserirAntesHook,
+    tamanhoAtualHook,
+    estaVaziaHook,
+    verPrimeiroHook,
+    verUltimoHook,
+  } = useVisualizationHooks({
     nodes,
     setNodes,
     isAnimating,
@@ -438,145 +270,6 @@ export default function LdseVisualization() {
     setAuxPointerIndex(null);
     setHighlightedNextPointerIndex(null);
   };
-  const preCodeLines = [
-    "class No:",
-    "    def __init__(self, valor, proximo):",
-    "        self.info = valor",
-    "        self.prox = proximo",
-    "",
-    "class Ldse:",
-    "    def __init__(self):",
-    "        self.prim = self.ult = None",
-    "        self.quant = 0",
-    "",
-    "    def inserir_inicio(self, valor):",
-    "        if self.quant == 0:",
-    "            self.prim = self.ult = No(valor, None)",
-    "        else:",
-    "            self.prim = No(valor, self.prim)",
-    "        self.quant += 1",
-    "",
-    "    def inserir_fim(self, valor):",
-    "        if self.quant == 0:",
-    "            self.prim = self.ult = No(valor, None)",
-    "        else:",
-    "            self.ult.prox = self.ult = No(valor, None)",
-    "        self.quant += 1",
-    "",
-    "    def remover_inicio(self):",
-    "        if self.quant == 1:",
-    "            self.prim = self.ult = None",
-    "        else:",
-    "            self.prim = self.prim.prox",
-    "        self.quant -= 1",
-    "",
-    "    def remover_irmaos(self, valor):",
-    "        if self.quant != 1 and self.quant != 0:",
-    "            anterior_do_anterior = None",
-    "            anterior = None",
-    "            atual = self.prim",
-    "            while atual != None and atual.info != valor:",
-    "                anterior_do_anterior = anterior",
-    "                anterior = atual",
-    "                atual = atual.prox",
-    "            if atual != None and atual.info == valor:",
-    "                if anterior != None and anterior == self.prim:",
-    "                    self.remover_inicio()",
-    "            else:",
-    "                if anterior_do_anterior != None:",
-    "                    anterior_do_anterior.prox = atual",
-    "                    anterior = None",
-    "                    self.quant -= 1",
-    "            if atual.prox != None and atual.prox == self.ult:",
-    "                self.remover_fim()",
-    "            else:",
-    "                if atual.prox != None:",
-    "                    proximo = atual.prox",
-    "                    atual.prox = proximo.prox",
-    "                    proximo = None",
-    "                    self.quant -= 1",
-    "",
-    "    def inserir_apos(self, valor1, valor2):",
-    "        aux = self.prim",
-    "        while aux != None and aux.info != valor2:",
-    "            aux = aux.prox",
-    "        if aux != None:",
-    "            if aux.prox == None:",
-    "                self.inserir_fim(valor1)",
-    "            else:",
-    "                aux.prox = No(valor1, aux.prox)",
-    "                self.quant += 1",
-    "",
-    "    def inserir_antes(self, valor1, valor2):",
-    "        anterior = None",
-    "        atual = self.prim",
-    "        while atual != None and atual.info != valor2:",
-    "            anterior = atual",
-    "            atual = atual.prox",
-    "        if atual != None:",
-    "            if anterior == None:",
-    "                self.inserir_inicio(valor1)",
-    "            else:",
-    "                anterior.prox = No(valor1, atual)",
-    "                self.quant += 1",
-    "",
-    "    def remover_elemento(self, valor):",
-    "        anterior = None",
-    "        atual = self.prim",
-    "        while atual != None and atual.info != valor:",
-    "            anterior = atual",
-    "            atual = atual.prox",
-    "        if atual != None:",
-    "            if atual == self.prim:",
-    "                self.remover_inicio()",
-    "            elif atual == self.ult:",
-    "                self.remover_fim()",
-    "            else:",
-    "                anterior.prox = atual.prox",
-    "                self.quant -= 1",
-    "",
-    "    def buscar(self, valor):",
-    "        aux = self.prim",
-    "        posicao = 0",
-    "        while aux != None and aux.info != valor:",
-    "            aux = aux.prox",
-    "            posicao += 1",
-    "        if aux != None and aux.info == valor:",
-    "            print(posicao)",
-    "        else:",
-    "            print(None)",
-    "",
-    "    def show(self):",
-    "        aux = self.prim",
-    "        while aux != None:",
-    '            print(aux.info, end = " ")',
-    "            aux = aux.prox",
-    '        print("\\n")',
-    "",
-    "    def tamanho_atual(self):",
-    "        return self.quant",
-    "",
-    "    def esta_vazia(self):",
-    "        return self.quant == 0",
-    "",
-    "    def ver_primeiro(self):",
-    "        return self.prim.info",
-    "",
-    "    def ver_ultimo(self):",
-    "        return self.ult.info",
-    "",
-    "    def remover_fim(self):",
-    "        if self.quant == 1:",
-    "            self.prim = self.ult = None",
-    "        else:",
-    "            aux = self.prim",
-    "            while aux.prox != self.ult:",
-    "                aux = aux.prox",
-    "            self.ult = aux",
-    "            self.ult.prox = None",
-    "            self.quant -= 1",
-    "",
-  ];
 
   return (
     <div className="p-6 font-sans">
@@ -872,7 +565,10 @@ export default function LdseVisualization() {
               <h3 className="text-lg font-semibold">Log de execução:</h3>
             </div>
             <div className="p-4">
-              <div className="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto text-sm border custom-scrollbar">
+              <div
+                ref={logContainerRef}
+                className="bg-gray-50 p-4 rounded-lg h-48 overflow-y-auto text-sm border custom-scrollbar"
+              >
                 {logs.length === 0 ? (
                   <div className="text-gray-500 italic">
                     Nenhuma execução ainda...
