@@ -175,21 +175,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}`}>
+                          <Link
+                            href={`/estruturas/${structure.id}?tab=conteudo`}
+                          >
                             Conteúdo
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}`}>
+                          <Link
+                            href={`/estruturas/${structure.id}?tab=visualization`}
+                          >
                             Visualização
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link href={`/estruturas/${structure.id}`}>
+                          <Link
+                            href={`/estruturas/${structure.id}?tab=practice`}
+                          >
                             Atividades
                           </Link>
                         </SidebarMenuSubButton>

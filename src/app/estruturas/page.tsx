@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
-import Link from 'next/link';
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+} from "@/components/ui/breadcrumb";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function EstruturasDeDados() {
   const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/login');
+    if (status === "unauthenticated") {
+      router.replace("/login");
     }
   }, [status, router]);
 
-  if (status === 'loading') return null;
+  if (status === "loading") return null;
 
   return (
     <SidebarProvider>
@@ -65,7 +65,7 @@ export default function EstruturasDeDados() {
           <div className="grid gap-8 md:grid-cols-4">
             {/* Estrutura disponível */}
             <Link
-              href="/estruturas/lista"
+              href="/estruturas/lista?tab=conteudo"
               className="bg-white border rounded-xl p-6 shadow flex flex-col items-center hover:shadow-lg transition cursor-pointer hover:border-primary focus-visible:ring-2 focus-visible:ring-primary outline-none"
             >
               <span className="text-4xl mb-2">📋</span>
@@ -80,22 +80,22 @@ export default function EstruturasDeDados() {
             {/* Estruturas em breve */}
             {[
               {
-                icon: '📥',
-                title: 'Fila',
+                icon: "📥",
+                title: "Fila",
                 description:
-                  'Estrutura FIFO: o primeiro a entrar é o primeiro a sair.',
+                  "Estrutura FIFO: o primeiro a entrar é o primeiro a sair.",
               },
               {
-                icon: '🗄️',
-                title: 'Pilha',
+                icon: "🗄️",
+                title: "Pilha",
                 description:
-                  'Estrutura LIFO: o último a entrar é o primeiro a sair.',
+                  "Estrutura LIFO: o último a entrar é o primeiro a sair.",
               },
               {
-                icon: '🌳',
-                title: 'Árvore',
+                icon: "🌳",
+                title: "Árvore",
                 description:
-                  'Estrutura hierárquica para dados em formato de árvore.',
+                  "Estrutura hierárquica para dados em formato de árvore.",
               },
             ].map((future) => (
               <div

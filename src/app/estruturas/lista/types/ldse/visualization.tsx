@@ -273,9 +273,9 @@ export default function LdseVisualization() {
 
   return (
     <div className="p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-4 text-gray-800">
+      <h2 className="text-2xl font-semibold mb-4">
         {currentFunction.info.title}
-      </h1>
+      </h2>
 
       <div className="mb-6">
         <p className="text-gray-600 mb-4">{currentFunction.info.description}</p>

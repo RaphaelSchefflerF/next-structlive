@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { useAppContext } from '@/contexts/AppContext';
-import { RecentStructures } from '@/components/recent-structures';
-import { ArrowRight, BookOpen, PlayCircle, Sparkles } from 'lucide-react';
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useAppContext } from "@/contexts/AppContext";
+import { RecentStructures } from "@/components/recent-structures";
+import { ArrowRight, BookOpen, PlayCircle, Sparkles } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-} from '@/components/ui/breadcrumb';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+} from "@/components/ui/breadcrumb";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HomePage() {
   const { status } = useSession();
@@ -28,12 +28,12 @@ export default function HomePage() {
   const { progress, dataStructures } = useAppContext();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/login');
+    if (status === "unauthenticated") {
+      router.replace("/login");
     }
   }, [status, router]);
 
-  if (status === 'loading') return null;
+  if (status === "loading") return null;
 
   // Encontra a última estrutura visitada pelo usuário
   const lastVisited = Object.entries(progress)
@@ -87,7 +87,7 @@ export default function HomePage() {
             </p>
             <div className="flex gap-4 mt-4 flex-wrap justify-center">
               <Button asChild size="lg" className="shadow-lg text-lg px-8 py-6">
-                <Link href="/estruturas">
+                <Link href="/estruturas?tab=conteudo">
                   <BookOpen className="mr-2 h-6 w-6" />
                   Começar Agora
                 </Link>
@@ -98,7 +98,7 @@ export default function HomePage() {
                 size="lg"
                 className="text-lg px-8 py-6"
               >
-                <Link href="/estruturas/lista">
+                <Link href="/estruturas/lista?tab=visualization">
                   <PlayCircle className="mr-2 h-6 w-6" />
                   Ver Demonstração
                 </Link>
@@ -151,11 +151,11 @@ export default function HomePage() {
             {/* Estruturas disponíveis */}
             {[
               {
-                icon: '📋',
-                title: 'Lista',
+                icon: "📋",
+                title: "Lista",
                 description:
-                  'Coleção linear de elementos com acesso sequencial.',
-                href: '/estruturas/lista',
+                  "Coleção linear de elementos com acesso sequencial.",
+                href: "/estruturas/lista",
               },
             ].map((structure) => (
               <Link
@@ -178,22 +178,22 @@ export default function HomePage() {
             {/* Estruturas em progresso (exemplo hardcoded) */}
             {[
               {
-                icon: '📥',
-                title: 'Fila',
+                icon: "📥",
+                title: "Fila",
                 description:
-                  'Estrutura FIFO: o primeiro a entrar é o primeiro a sair.',
+                  "Estrutura FIFO: o primeiro a entrar é o primeiro a sair.",
               },
               {
-                icon: '🗄️',
-                title: 'Pilha',
+                icon: "🗄️",
+                title: "Pilha",
                 description:
-                  'Estrutura LIFO: o último a entrar é o primeiro a sair.',
+                  "Estrutura LIFO: o último a entrar é o primeiro a sair.",
               },
               {
-                icon: '🌳',
-                title: 'Árvore',
+                icon: "🌳",
+                title: "Árvore",
                 description:
-                  'Estrutura hierárquica para dados em formato de árvore.',
+                  "Estrutura hierárquica para dados em formato de árvore.",
               },
             ].map((future) => (
               <div
@@ -235,7 +235,7 @@ export default function HomePage() {
                     {lastStructure.description}
                   </p>
                   <Button asChild>
-                    <Link href={`/estruturas/${lastStructure.id}`}>
+                    <Link href={`/estruturas/${lastStructure.id}?tab=conteudo`}>
                       Retomar aprendizado
                     </Link>
                   </Button>
