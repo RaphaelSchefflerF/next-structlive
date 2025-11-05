@@ -29,10 +29,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import ListActivity from "@/app/estruturas/lista/components/list-activity";
-import ListVisualization from "@/app/estruturas/lista/components/list-visualization";
-import ListTheory from "@/app/estruturas/lista/components/list-theory";
-import ListChallenge from "./components/list-challenge";
+import { listOptions } from "./config";
+
+
+
+import ListContentRenderer from "./components/list-content-renderer";
+
 
 function ListPageContent() {
   const searchParams = useSearchParams();
@@ -106,21 +108,11 @@ function ListPageContent() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="les" disabled>
-                  Lista Estática Sequencial
-                </SelectItem>
-                <SelectItem value="lee" disabled>
-                  Lista Estática Encadeada
-                </SelectItem>
-                <SelectItem value="ldse">
-                  Lista Dinâmica Simplesmente Encadeada
-                </SelectItem>
-                <SelectItem value="ldde" disabled>
-                  Lista Dinâmica Duplamente Encadeada
-                </SelectItem>
-                <SelectItem value="lc" disabled>
-                  Lista Circular
-                </SelectItem>
+                {listOptions.map((option) => (
+                  <SelectItem key={option.id} value={option.id} disabled={option.disabled}>
+                    {option.name}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -174,14 +166,14 @@ function ListPageContent() {
           {/* Conteudo - Explicação teórica */}
           <TabsContent value="conteudo">
             <div className="border rounded-lg p-6 bg-card">
-              <ListTheory tipo={tipoLista} />
+              <ListContentRenderer listType={tipoLista} contentType="theory" />
             </div>
           </TabsContent>
 
           {/* Visualização interativa */}
           <TabsContent value="visualization">
             <div className="border rounded-lg bg-card">
-              <ListVisualization tipo={tipoLista} />
+              <ListContentRenderer listType={tipoLista} contentType="visualization" />
             </div>
           </TabsContent>
 
@@ -194,7 +186,7 @@ function ListPageContent() {
               <p className="text-muted-foreground mb-6">
                 Complete os desafios para testar seu conhecimento sobre listas.
               </p>
-              <ListActivity tipo={tipoLista} />
+              <ListContentRenderer listType={tipoLista} contentType="activity" />
             </div>
           </TabsContent>
 
@@ -207,7 +199,7 @@ function ListPageContent() {
               <p className="text-muted-foreground mb-6">
                 Enfrente os desafios para aprimorar suas habilidades em listas.
               </p>
-              <ListChallenge tipo={tipoLista} />
+              <ListContentRenderer listType={tipoLista} contentType="challenge" />
             </div>
           </TabsContent>
         </Tabs>
