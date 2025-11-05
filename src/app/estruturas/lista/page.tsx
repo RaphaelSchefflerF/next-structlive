@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
@@ -37,13 +37,26 @@ import ListChallenge from "./components/list-challenge";
 export default function ListPage() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [tipoLista, setTipoLista] = useState("ldse");
+
+  // Lê o parâmetro 'tab' da URL, padrão é 'conteudo'
+  const tabFromUrl = searchParams.get("tab") || "conteudo";
+  const [activeTab, setActiveTab] = useState(tabFromUrl);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
+
+  // Atualiza a aba quando o parâmetro da URL mudar
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   if (status === "loading") return null;
 
@@ -127,7 +140,11 @@ export default function ListPage() {
           </div>
           <Separator className="my-6" />
 
-          <Tabs defaultValue="conteudo" className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList
               className="
                 flex flex-wrap w-full mb-4
